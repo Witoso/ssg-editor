@@ -1,0 +1,12 @@
+{
+  "extends": "../tsconfig.json",  // Extend the base configuration
+  "compilerOptions": {
+    "target": "ESNext",            // Target the latest ECMAScript features
+    "module": "ESNext",            // Use the latest module system
+    "moduleResolution": "node",    // Use Node.js-style module resolution
+    "outDir": "./dist",            // Output directory for compiled files
+    "rootDir": "./src",            // Root directory for your source code
+    "types": ["node", "express"]
+  },
+  "include": ["src/**/*.ts"]      // Include all TypeScript files in src folder
+}
