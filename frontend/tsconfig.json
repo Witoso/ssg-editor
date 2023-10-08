@@ -1,9 +1,8 @@
 {
-  "extends": "../tsconfig.json",  // Extend the base configuration
   "compilerOptions": {
     "target": "ESNext",            // Target the latest ECMAScript features
     "module": "ESNext",            // Use the latest module features
-    "moduleResolution": "node",    // Node.js-style module resolution
+    "moduleResolution": "Bundler",    // Node.js-style module resolution
     "lib": ["dom", "esnext"],      // Include DOM and latest ECMAScript lib files
     "outDir": "./dist",            // Output directory for compiled files
     "rootDir": "./src"            // Root directory for your source code
