@@ -4,11 +4,11 @@
     "module": "ESNext",            // Use the latest module system
     "moduleResolution": "node",    // Use Node.js-style module resolution
     "outDir": "./dist",            // Output directory for compiled files
-    "rootDir": "./src",            // Root directory for your source code
+    "rootDir": "..",            // Root directory for your source code
     "types": ["node", "express"],
     "esModuleInterop": true
 
   },
-  "include": ["src/**/*.ts"],     // Include all TypeScript files in src folder
+  "include": ["src/**/*.ts", "../types"],     // Include all TypeScript files in src folder
   "exclude": ["src/**/*.test.ts"]
 }
