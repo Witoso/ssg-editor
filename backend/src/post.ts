@@ -1,22 +1,30 @@
 import { readdir, FileHandle, open, readFile } from "node:fs/promises";
-import { extname, join, basename } from "path";
+import { basename, extname, join } from "path";
+import { PostType } from "../../types/post";
 
 export class Post {
-  frontmatter: string;
-  content: string;
-  filePath: string;
-  filename: string;
+  constructor(
+    public frontmatter: string,
+    public content: string,
+    public filePath: string
+  ) {}
 
-  constructor(frontmatter: string, content: string, filePath: string) {
-    this.frontmatter = frontmatter;
-    this.content = content;
-    this.filePath = filePath;
-    this.filename = basename(filePath);
+  public get fileName() {
+    return basename(this.filePath);
   }
 
-  public toString = () => {
+  public toString(): string {
     return `---\n${this.frontmatter}\n---\n\n${this.content}`;
-  };
+  }
+
+  public toJSON(): PostType {
+    return {
+      frontmatter: this.frontmatter,
+      content: this.content,
+      filePath: this.filePath,
+      filename: this.fileName,
+    };
+  }
 }
 
 export async function savePostToFile(post: Post) {

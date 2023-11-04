@@ -5,7 +5,7 @@ import {
   findPostsInDirectory,
   parsePostFromFile,
   savePostToFile,
-} from "./post";
+} from "./post.js";
 
 const files = ["test.md", "test2.md", "file.txt"];
 const dirPath = "/tmp/static-wyswig-test/";
@@ -64,7 +64,7 @@ test("it lists all posts in a directory", async () => {
   });
 
   const markdownFilenames = posts.map((post) => {
-    return post.filename;
+    return post.fileName;
   });
 
   expect(markdownFilePaths).toEqual([
@@ -73,4 +73,11 @@ test("it lists all posts in a directory", async () => {
   ]);
 
   expect(markdownFilenames).toEqual([`test.md`, `test2.md`]);
+});
+
+test("a post has JSON representation", () => {
+  const post = new Post("title: Title", "# Heading 1", "/tmp/post.md");
+  expect(JSON.stringify(post)).toBe(
+    '{"frontmatter":"title: Title","content":"# Heading 1","filePath":"/tmp/post.md","filename":"post.md"}'
+  );
 });
