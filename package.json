@@ -7,7 +7,7 @@
     "test": "vitest",
     "start": "concurrently npm:watch:ts npm:watch:node",
     "watch:ts": "npx tsc -p backend/tsconfig.json -w",
-    "watch:node": "node --watch backend/dist/index.js"
+    "watch:node": "node --watch backend/dist/backend/src/index.js"
   },
   "author": "Witek Socha",
   "license": "GPL-3.0-or-later",
@@ -16,7 +16,7 @@
     "@ckeditor/ckeditor5-autoformat": "^40.0.0",
     "@ckeditor/ckeditor5-basic-styles": "^40.0.0",
     "@ckeditor/ckeditor5-block-quote": "^40.0.0",
-    "@ckeditor/ckeditor5-editor-balloon": "^40.0.0",
+    "@ckeditor/ckeditor5-editor-classic": "^40.0.0",
     "@ckeditor/ckeditor5-essentials": "^40.0.0",
     "@ckeditor/ckeditor5-heading": "^40.0.0",
     "@ckeditor/ckeditor5-link": "^40.0.0",
@@ -35,11 +35,13 @@
     "concurrently": "^8.2.1",
     "eslint": "^8.51.0",
     "postcss": "^8.4.31",
+    "postcss-nesting": "^12.0.1",
     "tailwindcss": "^3.3.3",
     "ts-node": "^10.9.1",
     "typescript": "^5.2.2",
     "vite": "^4.4.11",
-    "vitest": "^0.34.6"
+    "vitest": "^0.34.6",
+    "zod": "^3.22.4"
   },
   "dependencies": {
     "cors": "^2.8.5",
