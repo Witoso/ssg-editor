@@ -2,6 +2,11 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+    /* Overrides the border radius setting in the theme. */
+    --ck-border-radius: 10px;
+}
+
 #editor {
   @apply prose;
 }

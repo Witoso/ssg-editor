@@ -5,7 +5,7 @@
     "moduleResolution": "Bundler",    // Node.js-style module resolution
     "lib": ["dom", "esnext"],      // Include DOM and latest ECMAScript lib files
     "outDir": "./dist",            // Output directory for compiled files
-    "rootDir": "./src"            // Root directory for your source code
+    "rootDir": ".."            // Root directory for your source code
   },
-  "include": ["src/**/*.ts"] // Include all TypeScript and TypeScript JSX files
+  "include": ["src/**/*.ts", "../types"] // Include all TypeScript and TypeScript JSX files
 }

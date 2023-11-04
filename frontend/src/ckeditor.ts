@@ -1,4 +1,4 @@
-import { BalloonEditor as BalloonEditorBase } from "@ckeditor/ckeditor5-editor-balloon";
+import { ClassicEditor as ClassicEditorBase } from "@ckeditor/ckeditor5-editor-classic";
 import { Essentials } from "@ckeditor/ckeditor5-essentials";
 import { Autoformat } from "@ckeditor/ckeditor5-autoformat";
 import { Bold, Italic } from "@ckeditor/ckeditor5-basic-styles";
@@ -8,9 +8,9 @@ import { Link } from "@ckeditor/ckeditor5-link";
 import { List } from "@ckeditor/ckeditor5-list";
 import { Paragraph } from "@ckeditor/ckeditor5-paragraph";
 
-export class BalloonEditor extends BalloonEditorBase {}
+export class ClassicEditor extends ClassicEditorBase {}
 
-BalloonEditor.builtinPlugins = [
+ClassicEditor.builtinPlugins = [
   Essentials,
   Autoformat,
   Bold,
@@ -22,7 +22,7 @@ BalloonEditor.builtinPlugins = [
   Paragraph,
 ];
 
-BalloonEditor.defaultConfig = {
+ClassicEditor.defaultConfig = {
   toolbar: {
     items: [
       "heading",
