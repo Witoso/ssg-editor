@@ -16,3 +16,11 @@ export const PostsListResponseSchema = z.object({
 });
 
 export type PostsListResponseType = z.infer<typeof PostsListResponseSchema>;
+
+export const PostResponseSchema = z.object({
+  status: z.union([z.literal("success"), z.literal("error")]),
+  post: z.union([PostSchema, z.null()]),
+  message: z.union([z.string(), z.null()]),
+});
+
+export type PostResponseType = z.infer<typeof PostResponseSchema>;

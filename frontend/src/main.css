@@ -4,9 +4,10 @@
 
 :root {
     /* Overrides the border radius setting in the theme. */
-    --ck-border-radius: 10px;
+    --ck-border-radius: .375rem;
 }
 
 #editor {
   @apply prose;
+  @apply lg:prose-xl;
 }

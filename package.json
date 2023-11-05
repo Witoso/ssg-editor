@@ -5,9 +5,10 @@
   "main": "index.js",
   "scripts": {
     "test": "vitest",
-    "start": "concurrently npm:watch:ts npm:watch:node",
+    "start": "concurrently npm:watch:ts npm:watch:node npm:watch:vite",
     "watch:ts": "npx tsc -p backend/tsconfig.json -w",
-    "watch:node": "node --watch backend/dist/backend/src/index.js"
+    "watch:node": "node --watch backend/dist/backend/src/index.js",
+    "watch:vite": "npx vite"
   },
   "author": "Witek Socha",
   "license": "GPL-3.0-or-later",
@@ -44,6 +45,7 @@
     "zod": "^3.22.4"
   },
   "dependencies": {
+    "@ckeditor/ckeditor5-markdown-gfm": "^40.0.0",
     "cors": "^2.8.5",
     "express": "^4.18.2"
   },
