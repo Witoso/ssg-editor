@@ -47,7 +47,8 @@
   "dependencies": {
     "@ckeditor/ckeditor5-markdown-gfm": "^40.0.0",
     "cors": "^2.8.5",
-    "express": "^4.18.2"
+    "express": "^4.18.2",
+    "lit-html": "^3.0.2"
   },
   "engines": {
     "node": ">=20.0.0"
