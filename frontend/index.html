@@ -7,19 +7,14 @@
     <title>SSG WYSIWIG</title>
   </head>
   <body>
-    <main class="my-5 mx-auto max-w-3xl prose">
+    <main class="my-5 mx-3 sm:mx-5">
+      <div class="mx-auto max-w-3xl prose">
       <h1>SSG WYSIWIG</h1>
 
       <posts-select></posts-select>
-
-      <!-- Later -->
-      <!-- <button -->
-      <!--   class="block w-full bg-sky-600 hover:bg-sky-700 my-5 px-5 py-3 text-white rounded-lg" -->
-      <!-- > -->
-      <!--   Create a new post -->
-      <!-- </button> -->
       <post-frontmatter></post-frontmatter>
       <ckeditor-component></ckeditor-component>
+      </div>
     </main>
     <script type="module" src="/src/main.ts"></script>
   </body>
