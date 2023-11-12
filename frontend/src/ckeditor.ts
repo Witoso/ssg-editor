@@ -80,7 +80,7 @@ export class CKEditorComponent extends HTMLElement {
   render() {
     const template = html`
       <h2>Post</h2>
-      <div class="block mx-auto" id="editor"></div>
+      <div id="editor"></div>
     `;
     render(template, this);
   }
