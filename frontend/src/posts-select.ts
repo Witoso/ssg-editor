@@ -1,10 +1,8 @@
 import { html, render } from "lit-html";
 import {
   PostResponseSchema,
-  PostResponseType,
   PostType,
   PostsListResponseSchema,
-  PostsListResponseType,
 } from "../../types/post";
 
 export interface PostSelectedEvent extends Event {
@@ -27,11 +25,10 @@ export class PostsSelect extends HTMLElement {
 
   render() {
     const template = html`
-      <label for="posts">Choose a post:</label>
       <select
         id="posts"
         name="posts"
-        class="block w-full mt-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 disabled:shadow-none"
+        class="block w-1/3 mt-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 disabled:shadow-none"
         ?disabled="${this.isLoading}"
         @change="${this.handleSelectChange}"
       >
@@ -59,7 +56,7 @@ export class PostsSelect extends HTMLElement {
 
     const data = await response.json();
 
-    const postsFilenames: PostsListResponseType =
+    const postsFilenames =
       PostsListResponseSchema.parse(data);
 
     if (!!postsFilenames.filenames.length) {
@@ -78,7 +75,7 @@ export class PostsSelect extends HTMLElement {
       if (response.ok) {
         const data = await response.json();
 
-        const postResponse: PostResponseType =
+        const postResponse =
           PostResponseSchema.parse(data);
 
         if (postResponse.status === "error") {

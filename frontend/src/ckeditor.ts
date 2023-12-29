@@ -16,6 +16,7 @@ import { html, render } from "lit-html";
 import { PostSelectedEvent } from "./posts-select";
 import { Autosave } from "@ckeditor/ckeditor5-autosave";
 import { Frontmatter } from "@witoso/ckeditor5-frontmatter";
+import { PostSaveRequestSchema } from "../../types/post";
 
 export class ClassicEditor extends ClassicEditorBase {}
 
@@ -33,14 +34,15 @@ ClassicEditor.builtinPlugins = [
   DocumentList,
   TodoDocumentList,
   Markdown,
-  Frontmatter
+  Frontmatter,
 ];
 
 ClassicEditor.defaultConfig = {
+  placeholder: "Start writing...",
   toolbar: {
     items: [
       "frontmatter",
-      '|',
+      "|",
       "undo",
       "redo",
       "|",
@@ -60,15 +62,15 @@ ClassicEditor.defaultConfig = {
     ],
   },
   language: "en",
-  frontmatter: new Map(
-    [
-      ['title', ''],
-      ['draft', 'true'],
-      ['date', '$currentDate']
-    ])
+  frontmatter: new Map([
+    ["title", ""],
+    ["draft", "true"],
+    ["date", "$currentDate"],
+  ]),
 };
 
 export class CKEditorComponent extends HTMLElement {
+  private currentPostFilename: string;
   editor: ClassicEditor;
 
   constructor() {
@@ -79,31 +81,25 @@ export class CKEditorComponent extends HTMLElement {
     this.render();
     await this.initializeEditor();
     this.listenForPostChange();
+    this.autosave();
   }
 
-  async initializeEditor() {
+  initializeEditor = async () => {
     this.editor = await ClassicEditor.create(
       this.querySelector("#editor") as HTMLElement, // Changed to querySelector
       {
-        placeholder: "Start writing...",
         autosave: {
           save: (editor: ClassicEditor) => {
-            return new Promise<void>((resolve) => {
-              console.log('Saving stub...');
-              resolve();
-            });
+            return saveData(editor, this.currentPostFilename);
           },
         },
-      }
+      },
     );
     this.editor.enableReadOnlyMode("post-not-loaded");
-  }
+  };
 
   render() {
-    const template = html`
-      <h2>Post</h2>
-      <div id="editor"></div>
-    `;
+    const template = html` <div id="editor"></div> `;
     render(template, this);
   }
 
@@ -111,13 +107,67 @@ export class CKEditorComponent extends HTMLElement {
     document.addEventListener("post-selected", (event: Event) => {
       const post = event as PostSelectedEvent;
       const content = post.detail.value.content;
+      this.currentPostFilename = post.detail.value.filename;
+
       if (this.editor) {
         this.editor.disableReadOnlyMode("post-not-loaded");
-        console.log(content)
         this.editor.setDataWithFrontmatter(content);
       } else {
         console.error("Editor is not initialized");
       }
     });
   };
+
+  private autosave = () => {
+    const pendingActions = this.editor.plugins.get("PendingActions");
+    const autosaveStatus = document.getElementById("autosave-status");
+
+    pendingActions.on("change:hasAny", (_evt, _propertyName, newValue) => {
+      if (newValue) {
+        autosaveStatus.textContent = "Saving...";
+      } else {
+        autosaveStatus.textContent = "Saved!";
+      }
+    });
+  };
+}
+
+function saveData(editor: ClassicEditor, filename: string) {
+  const apiUrl = "http://localhost:8989/posts";
+  return new Promise<void>((resolve, reject) => {
+    const content = editor.getDataWithFrontmatter();
+
+    const data = {
+      content: content,
+      filename: filename,
+    };
+
+    try {
+      const postSaveRequest = PostSaveRequestSchema.parse(data);
+
+      fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(postSaveRequest),
+      })
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error("Network response was not ok");
+          }
+          return response.json();
+        })
+        .then(() => {
+          resolve();
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+          reject();
+        });
+    } catch (error) {
+      console.error("Error:", error);
+      reject();
+    }
+  });
 }

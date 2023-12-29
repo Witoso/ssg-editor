@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!doctype html>
 
 <html lang="en">
   <head>
@@ -7,13 +7,28 @@
     <title>SSG WYSIWIG</title>
   </head>
   <body>
+    <!-- Top bar container -->
+    <div
+      class="bg-white border-b border-gray-300 px-4 py-2 flex items-center justify-between"
+    >
+      <!-- Left Section: Title -->
+      <div class="flex items-center w-full">
+        <span class="font-semibold text-lg sm:mr-6 mr-2">SSG WYSIWYG</span>
+
+        <div class="flex-grow">
+          <!-- This div will grow to take available space -->
+          <posts-select></posts-select>
+        </div>
+      </div>
+
+      <!-- Right Section: Autosave Status -->
+      <div class="w-20">
+        <span id="autosave-status" class="text-gray-400">Saved!</span>
+      </div>
+    </div>
     <main class="my-5 mx-3 sm:mx-5">
       <div class="mx-auto max-w-3xl prose">
-      <h1>SSG WYSIWIG</h1>
-
-      <posts-select></posts-select>
-      <post-frontmatter></post-frontmatter>
-      <ckeditor-component></ckeditor-component>
+        <ckeditor-component></ckeditor-component>
       </div>
     </main>
     <script type="module" src="/src/main.ts"></script>

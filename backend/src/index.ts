@@ -2,8 +2,18 @@ import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import cors from "cors";
 import express, { Express, Request, Response } from "express";
-import { findPostsInDirectory, parsePostFromFile } from "./post.js";
-import { PostResponseSchema, PostsListResponseSchema } from "../../types/post.js";
+import {
+  Post,
+  findPostsInDirectory,
+  parsePostFromFile,
+  savePostToFile,
+} from "./post.js";
+import {
+  PostResponseSchema,
+  PostSaveRequestSchema,
+  PostSaveResponseSchema,
+  PostsListResponseSchema,
+} from "../../types/post.js";
 
 const app: Express = express();
 const port = process.env.SW_PORT || "8989";
@@ -11,16 +21,18 @@ const port = process.env.SW_PORT || "8989";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// TODO this should be env var.
-const rootDir = "/Users/witold/workspace/ssg-wysiwyg/backend/demo";
+// TODO this should be on development only, provided by user.
+const rootDir = "/Users/witold/workspace/ssg-wysiwyg/demo";
 
 app.use(express.static(join(__dirname, "public")));
+
+app.use(express.json());
 
 // TODO only on dev.
 app.use(
   cors({
     origin: "http://localhost:5173",
-  })
+  }),
 );
 
 app.get("/", (_req: Request, res: Response) => {
@@ -47,7 +59,7 @@ app.get("/posts", async (_req: Request, res: Response) => {
       message: "Couldn't find the file.",
     };
 
-    console.log(`⚡️[SSG WYSIWYG]: Error ${error.message}`);
+    console.error(`⚡️[SSG WYSIWYG]: Error ${error.message}`);
     PostsListResponseSchema.parse(errorResponse);
 
     res.status(404).json(errorResponse);
@@ -60,7 +72,6 @@ app.get("/posts/:fileName", async (req, res) => {
   try {
     const postPath = `${rootDir}/${fileName}`;
     const post = await parsePostFromFile(postPath);
-    console.log(post)
 
     const response = {
       status: "success",
@@ -70,7 +81,6 @@ app.get("/posts/:fileName", async (req, res) => {
 
     PostResponseSchema.parse(response);
     res.json(response);
-
   } catch (error) {
     const errorResponse = {
       status: "error",
@@ -82,9 +92,38 @@ app.get("/posts/:fileName", async (req, res) => {
 
     res.status(404).json(errorResponse);
   }
+});
 
+app.post("/posts", async (req, res) => {
+  try {
+    console.log(req.body)
+    const postData = PostSaveRequestSchema.parse(req.body);
+
+    const post = new Post(postData.content, `${rootDir}/${postData.filename}`);
+
+    await savePostToFile(post);
+
+    const response = {
+      status: "success",
+      message: null,
+    };
+
+    PostSaveResponseSchema.parse(response);
+    res.json(response);
+  } catch (error) {
+    const errorResponse = {
+      status: "error",
+      message: error.message,
+    };
+
+    PostSaveResponseSchema.parse(errorResponse);
+    res.status(400).json(errorResponse);
+    console.error(`⚡️[SSG WYSIWYG]: Error ${error.message}`);
+  }
 });
 
 app.listen(port, () => {
-  console.log(`⚡️[SSG WYSIWYG]: Server is running at http://localhost:${port}`);
+  console.log(
+    `⚡️[SSG WYSIWYG]: Server is running at http://localhost:${port}`,
+  );
 });
