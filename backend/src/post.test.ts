@@ -26,14 +26,14 @@ afterAll(() => {
 });
 
 test("a post has proper string representation", () => {
-  const post = new Post("title: Title", "# Heading 1", "/tmp/post.md");
+  const post = new Post("---\ntitle: Title\n---\n\n# Heading 1", "/tmp/post.md");
   expect(post.toString()).toBe("---\ntitle: Title\n---\n\n# Heading 1");
 });
 
 test("it writes post to a file", async () => {
   const filePath = dirPath + "test-post-write.md";
 
-  const post = new Post("title: Title", "# Heading 1", filePath);
+  const post = new Post("---\ntitle: Title\n---\n\n# Heading 1", filePath);
   await savePostToFile(post);
 
   const exists = fs.existsSync(filePath);
@@ -51,9 +51,7 @@ test("it parses a post from a file", async () => {
   const filePath = dirPath + "test.md";
 
   const parsedPost = await parsePostFromFile(filePath);
-
-  expect(parsedPost.frontmatter).toEqual("title: Title");
-  expect(parsedPost.content).toEqual("# Heading 1");
+  expect(parsedPost.content).toBe(postInFile);
 });
 
 test("it lists all posts in a directory", async () => {
@@ -76,8 +74,12 @@ test("it lists all posts in a directory", async () => {
 });
 
 test("a post has JSON representation", () => {
-  const post = new Post("title: Title", "# Heading 1", "/tmp/post.md");
-  expect(JSON.stringify(post)).toBe(
-    '{"frontmatter":"title: Title","content":"# Heading 1","filePath":"/tmp/post.md","filename":"post.md"}'
-  );
+  const post = new Post("---\ntitle: Title\n---\n\n# Heading 1", "/tmp/post.md");
+    const expectedJson = {
+    content: "---\ntitle: Title\n---\n\n# Heading 1",
+    filePath: "/tmp/post.md", // Adjust based on your class implementation
+    filename: "post.md"
+  };
+    expect(JSON.stringify(post)).toBe(JSON.stringify(expectedJson));
+
 });

@@ -4,7 +4,6 @@ import { PostType } from "../../types/post";
 
 export class Post {
   constructor(
-    public frontmatter: string,
     public content: string,
     public filePath: string
   ) {}
@@ -14,12 +13,11 @@ export class Post {
   }
 
   public toString(): string {
-    return `---\n${this.frontmatter}\n---\n\n${this.content}`;
+    return this.content
   }
 
   public toJSON(): PostType {
     return {
-      frontmatter: this.frontmatter,
       content: this.content,
       filePath: this.filePath,
       filename: this.fileName,
@@ -48,12 +46,8 @@ export async function parsePostFromFile(filePath: string): Promise<Post> {
   }
 }
 
-// TODO: handling posts w/o frontmatter, etc.
 function parsePost(postFromFile: string, filePath: string): Post {
-  const splitPost = postFromFile.split("---\n\n");
-  const frontmatter = splitPost[0].slice(4).slice(0, -1);
-  const content = splitPost[1];
-  return new Post(frontmatter, content, filePath);
+  return new Post(postFromFile, filePath);
 }
 
 // TODO: nested posts

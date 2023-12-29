@@ -1,7 +1,6 @@
 import { z } from "zod";
 
 export const PostSchema = z.object({
-  frontmatter: z.string(),
   content: z.string(),
   filePath: z.string(),
   filename: z.string(),
