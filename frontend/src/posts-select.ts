@@ -20,7 +20,8 @@ export class PostsSelect extends HTMLElement {
 
   async connectedCallback() {
     this.render();
-    this.fetchPosts();
+    await this.fetchPosts();
+    this.selectPostFromUrl();
   }
 
   render() {
@@ -56,8 +57,7 @@ export class PostsSelect extends HTMLElement {
 
     const data = await response.json();
 
-    const postsFilenames =
-      PostsListResponseSchema.parse(data);
+    const postsFilenames = PostsListResponseSchema.parse(data);
 
     if (!!postsFilenames.filenames.length) {
       this.isLoading = false;
@@ -69,14 +69,18 @@ export class PostsSelect extends HTMLElement {
   private handleSelectChange = async (event: Event) => {
     const selectedPost = (event.target as HTMLSelectElement).value;
 
+    // Update the URL with the selected filename
+    const url = new URL(window.location.href);
+    url.searchParams.set("filename", selectedPost);
+    window.history.pushState({}, "", url);
+
     try {
       const response = await fetch(`${this.apiUrl}/posts/${selectedPost}`);
 
       if (response.ok) {
         const data = await response.json();
 
-        const postResponse =
-          PostResponseSchema.parse(data);
+        const postResponse = PostResponseSchema.parse(data);
 
         if (postResponse.status === "error") {
           console.error(`API request failed. Error: ${postResponse.message}`);
@@ -90,7 +94,7 @@ export class PostsSelect extends HTMLElement {
     } catch (error) {
       console.error("An error occurred", error);
     }
-  }
+  };
 
   private sendEvent(post: PostType) {
     const postSelected: PostSelectedEvent = new CustomEvent("post-selected", {
@@ -100,5 +104,19 @@ export class PostsSelect extends HTMLElement {
 
     // Dispatch the event
     this.dispatchEvent(postSelected);
+  }
+
+  private selectPostFromUrl() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const filename = urlParams.get("filename");
+
+    if (filename && this._postsFilenames.includes(filename)) {
+      const selectElement = this.querySelector<HTMLSelectElement>("#posts");
+      if (selectElement) {
+        selectElement.value = filename;
+        const event = new Event("change", { bubbles: true });
+        selectElement.dispatchEvent(event);
+      }
+    }
   }
 }
