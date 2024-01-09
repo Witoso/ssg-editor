@@ -29,7 +29,7 @@ export class PostsSelect extends HTMLElement {
       <select
         id="posts"
         name="posts"
-        class="block w-1/3 mt-1 rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 disabled:shadow-none"
+        class="block sm:w-80 rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 disabled:bg-slate-50 disabled:text-slate-500 disabled:border-slate-200 disabled:shadow-none"
         ?disabled="${this.isLoading}"
         @change="${this.handleSelectChange}"
       >
