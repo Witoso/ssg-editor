@@ -81,7 +81,7 @@ export class CKEditorComponent extends HTMLElement {
     this.render();
     await this.initializeEditor();
     this.listenForPostChange();
-    this.autosave();
+    this.autosaveIndicator();
   }
 
   initializeEditor = async () => {
@@ -118,7 +118,7 @@ export class CKEditorComponent extends HTMLElement {
     });
   };
 
-  private autosave = () => {
+  private autosaveIndicator = () => {
     const pendingActions = this.editor.plugins.get("PendingActions");
     const autosaveStatus = document.getElementById("autosave-status");
 

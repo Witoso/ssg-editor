@@ -1,7 +1,13 @@
 import { html, render } from "lit-html";
+import {
+  PostCreateRequestSchema,
+  PostCreateResponseSchema,
+} from "../../types/post";
+import { setFilenameToUrl } from "./url";
 
 export class AddPost extends HTMLElement {
   private isOpen: boolean;
+  private filenameError: string;
 
   constructor() {
     super();
@@ -44,18 +50,68 @@ export class AddPost extends HTMLElement {
   handleFocusOut(event: FocusEvent) {
     // Check if the new focused element is outside this component
 
-    if (!this.contains((event.relatedTarget) as HTMLElement)) {
+    if (!this.contains(event.relatedTarget as HTMLElement)) {
       this.isOpen = false;
       this.render();
     }
   }
 
   replaceSpacesWithDashes(event: InputEvent) {
-    (event.target as HTMLInputElement).value = (event.target as HTMLInputElement).value.replace(/\s+/g, "-");
+    (event.target as HTMLInputElement).value = (
+      event.target as HTMLInputElement
+    ).value.replace(/\s+/g, "-");
   }
 
-  handleAddClick() {
-    // Handle the logic for 'Add' action
+  async handleSubmit(event: SubmitEvent) {
+    event.preventDefault();
+    const form = event.target as HTMLFormElement;
+
+    const filename = `${form.elements["filename"].value}.md`;
+
+    const apiUrl = "http://localhost:8989/posts/create";
+    const data = {
+      filename: filename,
+    };
+
+    try {
+      const postSaveRequest = PostCreateRequestSchema.parse(data);
+
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(postSaveRequest),
+      });
+
+      const body = await response.json();
+      const createResponse = PostCreateResponseSchema.parse(body);
+
+      if (createResponse.status === "error") {
+        if (createResponse.message === "Post exists") {
+          this.filenameError = "Post already exists.";
+        } else {
+          this.filenameError = "Internal error.";
+        }
+      } else {
+        form.elements["filename"].value = "";
+        this.isOpen = false;
+        setFilenameToUrl(filename);
+        this.sendRefreshEvent();
+      }
+      this.render();
+    } catch (error) {
+      console.error("Error:", error);
+    }
+  }
+
+  private sendRefreshEvent() {
+    const refreshEvent = new CustomEvent("refresh-posts", {
+      bubbles: true,
+    });
+
+    // Dispatch the event
+    this.dispatchEvent(refreshEvent);
   }
 
   render() {
@@ -79,28 +135,37 @@ export class AddPost extends HTMLElement {
         </button>
       </div>
       <div class="${dropdownClasses}">
-        <form class="px-4 py-3 flex items-center">
-          <div class="flex items-center flex-grow">
-            <input
-              type="text"
-              name="filename"
-              id="filename"
-              class="focus:ring-indigo-500 focus:border-indigo-500 block w-full rounded-l-md sm:text-sm border-gray-300 py-2 h-10"
-              placeholder="Enter file name"
-            />
-            <span
-              class="inline-flex items-center px-3 py-2 border border-l-0 border-gray-300 bg-gray-50 text-gray-500 sm:text-sm h-10"
-              >.md</span
-            >
-            <button
-              type="submit"
-              class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-r-md h-10"
-              @click="${() => this.handleAddClick()}"
-            >
-              Add
-            </button>
-          </div>
-        </form>
+        <div class="flex flex-col">
+          <form
+            class="px-4 py-3 flex items-center"
+            @submit="${(event: SubmitEvent) => this.handleSubmit(event)}"
+          >
+            <div class="flex items-center flex-grow">
+              <input
+                type="text"
+                name="filename"
+                id="filename"
+                class="focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50 block w-full rounded-l-md sm:text-sm border-gray-300 py-2 h-10"
+                placeholder="Enter file name"
+              />
+              <span
+                class="inline-flex items-center px-3 py-2 border border-l-0 border-gray-300 bg-gray-50 text-gray-500 sm:text-sm h-10"
+                >.md</span
+              >
+              <button
+                type="submit"
+                class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-r-md h-10"
+              >
+                Add
+              </button>
+            </div>
+          </form>
+          ${this.filenameError
+            ? html`<span class="text-red-500 text-sm block px-4 pb-2"
+                >${this.filenameError}</span
+              >`
+            : ""}
+        </div>
       </div>
     `;
     render(template, this);

@@ -4,6 +4,7 @@ import {
   PostType,
   PostsListResponseSchema,
 } from "../../types/post";
+import { getFilenameFromUrl, setFilenameToUrl } from "./url";
 
 export interface PostSelectedEvent extends Event {
   detail: { value: PostType };
@@ -20,8 +21,8 @@ export class PostsSelect extends HTMLElement {
 
   async connectedCallback() {
     this.render();
-    await this.fetchPosts();
-    this.selectPostFromUrl();
+    this.refresh();
+    this.listenForRefresh();
   }
 
   render() {
@@ -48,6 +49,11 @@ export class PostsSelect extends HTMLElement {
     this.render();
   }
 
+  async refresh() {
+    await this.fetchPosts();
+    this.selectPostFromUrl();
+  }
+
   private async fetchPosts() {
     const response = await fetch(`${this.apiUrl}/posts`);
 
@@ -70,9 +76,7 @@ export class PostsSelect extends HTMLElement {
     const selectedPost = (event.target as HTMLSelectElement).value;
 
     // Update the URL with the selected filename
-    const url = new URL(window.location.href);
-    url.searchParams.set("filename", selectedPost);
-    window.history.pushState({}, "", url);
+    setFilenameToUrl(selectedPost);
 
     try {
       const response = await fetch(`${this.apiUrl}/posts/${selectedPost}`);
@@ -107,8 +111,7 @@ export class PostsSelect extends HTMLElement {
   }
 
   private selectPostFromUrl() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const filename = urlParams.get("filename");
+    const filename = getFilenameFromUrl();
 
     if (filename && this._postsFilenames.includes(filename)) {
       const selectElement = this.querySelector<HTMLSelectElement>("#posts");
@@ -119,4 +122,10 @@ export class PostsSelect extends HTMLElement {
       }
     }
   }
+
+  private listenForRefresh = () => {
+    document.addEventListener("refresh-posts", (_event: Event) => {
+      this.refresh();
+    });
+  };
 }
