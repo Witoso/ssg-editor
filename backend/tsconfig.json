@@ -3,7 +3,7 @@
     "target": "ESNext",            // Target the latest ECMAScript features
     "module": "ESNext",            // Use the latest module system
     "moduleResolution": "node",    // Use Node.js-style module resolution
-    "outDir": "./dist",            // Output directory for compiled files
+    "outDir": "../dist",            // Output directory for compiled files
     "rootDir": "..",            // Root directory for your source code
     "types": ["node", "express"],
     "esModuleInterop": true

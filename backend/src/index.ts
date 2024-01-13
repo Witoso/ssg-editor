@@ -1,6 +1,7 @@
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import cors from "cors";
+import compression from "compression";
 import express, { Express, Request, Response } from "express";
 import {
   Post,
@@ -20,24 +21,25 @@ import {
 } from "../../types/post.js";
 
 const app: Express = express();
-const port = process.env.SW_PORT || "8989";
+const port = "8989";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-// TODO this should be on development only, provided by user.
-const rootDir = "/Users/witold/workspace/ssg-wysiwyg/demo";
+const rootDir = process.env.DEMO_FOLDER || `${__dirname}/../../demo`;
 
 app.use(express.static(join(__dirname, "public")));
-
 app.use(express.json());
 
-// TODO only on dev.
-app.use(
-  cors({
-    origin: "http://localhost:5173",
-  }),
-);
+if (process.env.DEMO_FOLDER) {
+  app.use(
+    cors({
+      origin: "http://localhost:5173",
+    }),
+  );
+} else {
+  app.use(compression())
+}
 
 app.get("/", (_req: Request, res: Response) => {
   res.sendFile("./public/index.html", { root: __dirname });
