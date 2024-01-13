@@ -1,11 +1,11 @@
-import { readdir, FileHandle, open, readFile } from "node:fs/promises";
+import { access, readdir, FileHandle, open, readFile } from "node:fs/promises";
 import { basename, extname, join } from "path";
 import { PostType } from "../../types/post";
 
 export class Post {
   constructor(
     public content: string,
-    public filePath: string
+    public filePath: string,
   ) {}
 
   public get fileName() {
@@ -13,7 +13,7 @@ export class Post {
   }
 
   public toString(): string {
-    return this.content
+    return this.content;
   }
 
   public toJSON(): PostType {
@@ -22,6 +22,15 @@ export class Post {
       filePath: this.filePath,
       filename: this.fileName,
     };
+  }
+}
+
+export async function postExists(filePath: string): Promise<boolean> {
+  try {
+    await access(filePath);
+    return true;
+  } catch {
+    return false;
   }
 }
 

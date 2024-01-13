@@ -29,3 +29,14 @@ export const PostSaveResponseSchema = z.object({
   status: z.union([z.literal("success"), z.literal("error")]),
   message: z.union([z.string(), z.null()]),
 });
+
+export const PostCreateRequestSchema = z.object({
+  filename: z.string(),
+});
+
+export const PostCreateResponseSchema = z.object({
+  status: z.union([z.literal("success"), z.literal("error")]),
+  message: z.union([z.string(), z.null()]),
+});
+
+export type PostCreateResponseType = z.infer<typeof PostCreateResponseSchema>;

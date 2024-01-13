@@ -6,9 +6,13 @@ import {
   Post,
   findPostsInDirectory,
   parsePostFromFile,
+  postExists,
   savePostToFile,
 } from "./post.js";
 import {
+  PostCreateRequestSchema,
+  PostCreateResponseSchema,
+  PostCreateResponseType,
   PostResponseSchema,
   PostSaveRequestSchema,
   PostSaveResponseSchema,
@@ -96,7 +100,6 @@ app.get("/posts/:fileName", async (req, res) => {
 
 app.post("/posts", async (req, res) => {
   try {
-    console.log(req.body)
     const postData = PostSaveRequestSchema.parse(req.body);
 
     const post = new Post(postData.content, `${rootDir}/${postData.filename}`);
@@ -120,6 +123,43 @@ app.post("/posts", async (req, res) => {
     res.status(400).json(errorResponse);
     console.error(`⚡️[SSG WYSIWYG]: Error ${error.message}`);
   }
+});
+
+app.post("/posts/create", async (req, res) => {
+  let errorResponse: PostCreateResponseType;
+  try {
+    const postData = PostCreateRequestSchema.parse(req.body);
+
+    const exists = await postExists(`${rootDir}/${postData.filename}`);
+
+    if (!exists) {
+      const post = new Post("", `${rootDir}/${postData.filename}`);
+
+      await savePostToFile(post);
+
+      const response = {
+        status: "success",
+        message: null,
+      };
+
+      PostCreateResponseSchema.parse(response);
+      res.json(response);
+      return;
+    } else {
+      errorResponse = {
+        status: "error",
+        message: "Post exists",
+      };
+    }
+  } catch (error) {
+    console.error(`⚡️[SSG WYSIWYG]: Error ${error.message}`);
+    errorResponse = {
+      status: "error",
+      message: error.message,
+    };
+  }
+  PostCreateResponseSchema.parse(errorResponse);
+  res.status(400).json(errorResponse);
 });
 
 app.listen(port, () => {

@@ -4,6 +4,7 @@ import {
   Post,
   findPostsInDirectory,
   parsePostFromFile,
+  postExists,
   savePostToFile,
 } from "./post.js";
 
@@ -26,7 +27,10 @@ afterAll(() => {
 });
 
 test("a post has proper string representation", () => {
-  const post = new Post("---\ntitle: Title\n---\n\n# Heading 1", "/tmp/post.md");
+  const post = new Post(
+    "---\ntitle: Title\n---\n\n# Heading 1",
+    "/tmp/post.md",
+  );
   expect(post.toString()).toBe("---\ntitle: Title\n---\n\n# Heading 1");
 });
 
@@ -74,12 +78,22 @@ test("it lists all posts in a directory", async () => {
 });
 
 test("a post has JSON representation", () => {
-  const post = new Post("---\ntitle: Title\n---\n\n# Heading 1", "/tmp/post.md");
-    const expectedJson = {
+  const post = new Post(
+    "---\ntitle: Title\n---\n\n# Heading 1",
+    "/tmp/post.md",
+  );
+  const expectedJson = {
     content: "---\ntitle: Title\n---\n\n# Heading 1",
     filePath: "/tmp/post.md", // Adjust based on your class implementation
-    filename: "post.md"
+    filename: "post.md",
   };
-    expect(JSON.stringify(post)).toBe(JSON.stringify(expectedJson));
+  expect(JSON.stringify(post)).toBe(JSON.stringify(expectedJson));
+});
 
+test("check if the post exists", async () => {
+  const exists = await postExists(`${dirPath}/test.md`);
+  expect(exists).toBe(true);
+
+  const doesntExists = await postExists(`${dirPath}/123lalala.md`);
+  expect(doesntExists).toBe(false);
 });
