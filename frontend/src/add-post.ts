@@ -35,24 +35,23 @@ export class AddPost extends HTMLElement {
     );
   }
 
-  toggleDropdown(event) {
+  toggleDropdown() {
     // Ensure that we toggle only when the button is clicked
     this.isOpen = !this.isOpen;
-    console.log(this.isOpen);
     this.render();
   }
 
-  handleFocusOut(event) {
+  handleFocusOut(event: FocusEvent) {
     // Check if the new focused element is outside this component
-    console.log(event.relatedTarget)
-    if (!this.contains(event.relatedTarget)) {
+
+    if (!this.contains((event.relatedTarget) as HTMLElement)) {
       this.isOpen = false;
       this.render();
     }
   }
 
-  replaceSpacesWithDashes(event) {
-    event.target.value = event.target.value.replace(/\s+/g, "-");
+  replaceSpacesWithDashes(event: InputEvent) {
+    (event.target as HTMLInputElement).value = (event.target as HTMLInputElement).value.replace(/\s+/g, "-");
   }
 
   handleAddClick() {
