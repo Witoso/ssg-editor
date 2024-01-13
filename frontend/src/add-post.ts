@@ -59,13 +59,12 @@ export class AddPost extends HTMLElement {
   }
 
   render() {
-    const dropdownClasses = `absolute mt-1 max-w-96 rounded-md bg-white shadow-lg z-50 right-0 ${
+    const dropdownClasses = `absolute mt-1 rounded-md bg-white shadow-lg z-50 right-0 ${
       this.isOpen ? "" : "hidden"
     }`;
     const template = html`
-      <div class="flex items-center justify-center h-full">
+      <div class="flex justify-center h-full">
         <button class="text-gray-300 hover:text-black text-2xl font-bold">
-          <!-- Your SVG icon here -->
           <svg
             class="text-gray-300 hover:text-black"
             width="20px"
