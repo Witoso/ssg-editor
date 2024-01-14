@@ -34,6 +34,14 @@ test("a post has proper string representation", () => {
   expect(post.toString()).toBe("---\ntitle: Title\n---\n\n# Heading 1");
 });
 
+test("a post has proper escaping of frontmatter", () => {
+  const post = new Post(
+    "---\ntitle: Title\narray: \\[\"one\"\\]\n---\n\n# Heading 1",
+    "/tmp/post.md",
+  );
+  expect(post.toString()).toBe("---\ntitle: Title\narray: [\"one\"]\n---\n\n# Heading 1");
+});
+
 test("it writes post to a file", async () => {
   const filePath = dirPath + "test-post-write.md";
 

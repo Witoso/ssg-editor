@@ -6,7 +6,16 @@ export class Post {
   constructor(
     public content: string,
     public filePath: string,
-  ) {}
+  ) {
+    const frontmatterRegex = /---\n([\s\S]*?)\n---/;
+    this.content = content.replace(
+      frontmatterRegex,
+      (_match, frontmatterContent) => {
+        const cleanedFrontmatter =  frontmatterContent.replace(/\\+([[\]\-_>"'])/g, "$1"); // yaml frontmatter can have unescaped chars like [, > or -. Those escapes can appear in JSON.
+        return `---\n${cleanedFrontmatter}\n---`
+      },
+    );
+  }
 
   public get fileName() {
     return basename(this.filePath);
