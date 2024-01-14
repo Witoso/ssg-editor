@@ -16,7 +16,7 @@
   "license": "GPL-3.0-or-later",
   "type": "module",
   "bin": {
-    "ssge": "./dist/cli.mjs"
+    "ssge": "dist/cli.mjs"
   },
   "files": [
     "dist",
