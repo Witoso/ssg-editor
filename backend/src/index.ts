@@ -26,19 +26,19 @@ const port = "8989";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
-const rootDir = process.env.DEMO_FOLDER || `${__dirname}/../../demo`;
-
 app.use(express.static(join(__dirname, "public")));
 app.use(express.json());
 
-if (process.env.DEMO_FOLDER) {
+const rootDir = process.env.SSG_E_ROOT_FOLDER;
+
+if (process.env.NODE_ENV === "dev") {
   app.use(
     cors({
       origin: "http://localhost:5173",
     }),
   );
 } else {
-  app.use(compression())
+  app.use(compression());
 }
 
 app.get("/", (_req: Request, res: Response) => {
