@@ -10,7 +10,7 @@ import {
 import { BlockQuote } from "@ckeditor/ckeditor5-block-quote";
 import { Heading } from "@ckeditor/ckeditor5-heading";
 import { Link } from "@ckeditor/ckeditor5-link";
-import { DocumentList, TodoDocumentList } from "@ckeditor/ckeditor5-list";
+import { List, TodoList } from "@ckeditor/ckeditor5-list";
 import { Markdown } from "@ckeditor/ckeditor5-markdown-gfm";
 import { html, render } from "lit-html";
 import { PostSelectedEvent } from "./posts-select";
@@ -31,8 +31,8 @@ ClassicEditor.builtinPlugins = [
   BlockQuote,
   Heading,
   Link,
-  DocumentList,
-  TodoDocumentList,
+  List,
+  TodoList,
   Markdown,
   Frontmatter,
 ];

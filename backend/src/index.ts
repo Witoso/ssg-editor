@@ -65,7 +65,7 @@ app.get("/posts", async (_req: Request, res: Response) => {
       message: "Couldn't find the file.",
     };
 
-    console.error(`⚡️[SSG WYSIWYG]: Error ${error.message}`);
+    console.error(`⚡️[SSG EDITOR]: Error ${error.message}`);
     PostsListResponseSchema.parse(errorResponse);
 
     res.status(404).json(errorResponse);
@@ -123,7 +123,7 @@ app.post("/posts", async (req, res) => {
 
     PostSaveResponseSchema.parse(errorResponse);
     res.status(400).json(errorResponse);
-    console.error(`⚡️[SSG WYSIWYG]: Error ${error.message}`);
+    console.error(`⚡️[SSG EDITOR]: Error ${error.message}`);
   }
 });
 
@@ -154,7 +154,7 @@ app.post("/posts/create", async (req, res) => {
       };
     }
   } catch (error) {
-    console.error(`⚡️[SSG WYSIWYG]: Error ${error.message}`);
+    console.error(`⚡️[SSG EDITOR]: Error ${error.message}`);
     errorResponse = {
       status: "error",
       message: error.message,
@@ -166,6 +166,6 @@ app.post("/posts/create", async (req, res) => {
 
 app.listen(port, () => {
   console.log(
-    `⚡️[SSG WYSIWYG]: Server is running at http://localhost:${port}`,
+    `⚡️[SSG EDITOR]: Server is running at http://localhost:${port}`,
   );
 });
