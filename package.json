@@ -1,6 +1,6 @@
 {
   "name": "@witoso/ssg-editor",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "",
   "scripts": {
     "prepublish": "npm run build",
