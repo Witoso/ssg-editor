@@ -17,6 +17,7 @@ import { PostSelectedEvent } from "./posts-select";
 import { Autosave } from "@ckeditor/ckeditor5-autosave";
 import { Frontmatter } from "@witoso/ckeditor5-frontmatter";
 import { PostSaveRequestSchema } from "../../types/post";
+import { CodeBlock } from "@ckeditor/ckeditor5-code-block";
 
 export class ClassicEditor extends ClassicEditorBase {}
 
@@ -33,6 +34,7 @@ ClassicEditor.builtinPlugins = [
   Link,
   List,
   TodoList,
+  CodeBlock,
   Markdown,
   Frontmatter,
 ];
@@ -54,11 +56,13 @@ ClassicEditor.defaultConfig = {
       "strikethrough",
       "|",
       "link",
+      "|",
       "bulletedList",
       "numberedList",
       "todoList",
       "|",
       "blockQuote",
+      "codeBlock",
     ],
   },
   language: "en",
