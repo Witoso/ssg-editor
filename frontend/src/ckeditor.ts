@@ -1,23 +1,26 @@
-import { ClassicEditor as ClassicEditorBase } from "@ckeditor/ckeditor5-editor-classic";
-import { Essentials } from "@ckeditor/ckeditor5-essentials";
 import { Autoformat } from "@ckeditor/ckeditor5-autoformat";
+import { Autosave } from "@ckeditor/ckeditor5-autosave";
 import {
   Bold,
+  Code,
   Italic,
   Strikethrough,
   Underline,
 } from "@ckeditor/ckeditor5-basic-styles";
 import { BlockQuote } from "@ckeditor/ckeditor5-block-quote";
+import { CodeBlock } from "@ckeditor/ckeditor5-code-block";
+import { ClassicEditor as ClassicEditorBase } from "@ckeditor/ckeditor5-editor-classic";
+import { Essentials } from "@ckeditor/ckeditor5-essentials";
 import { Heading } from "@ckeditor/ckeditor5-heading";
+import { HtmlEmbed } from "@ckeditor/ckeditor5-html-embed";
 import { Link } from "@ckeditor/ckeditor5-link";
 import { List, TodoList } from "@ckeditor/ckeditor5-list";
 import { Markdown } from "@ckeditor/ckeditor5-markdown-gfm";
-import { html, render } from "lit-html";
-import { PostSelectedEvent } from "./posts-select";
-import { Autosave } from "@ckeditor/ckeditor5-autosave";
+import type GFMDataProcessor from "@ckeditor/ckeditor5-markdown-gfm/src/gfmdataprocessor";
 import { Frontmatter } from "@witoso/ckeditor5-frontmatter";
+import { html, render } from "lit-html";
 import { PostSaveRequestSchema } from "../../types/post";
-import { CodeBlock } from "@ckeditor/ckeditor5-code-block";
+import { PostSelectedEvent } from "./posts-select";
 
 export class ClassicEditor extends ClassicEditorBase {}
 
@@ -29,6 +32,7 @@ ClassicEditor.builtinPlugins = [
   Italic,
   Underline,
   Strikethrough,
+  Code,
   BlockQuote,
   Heading,
   Link,
@@ -37,6 +41,7 @@ ClassicEditor.builtinPlugins = [
   CodeBlock,
   Markdown,
   Frontmatter,
+  HtmlEmbed,
 ];
 
 ClassicEditor.defaultConfig = {
@@ -63,6 +68,7 @@ ClassicEditor.defaultConfig = {
       "|",
       "blockQuote",
       "codeBlock",
+      "htmlEmbed",
     ],
   },
   language: "en",
@@ -100,6 +106,9 @@ export class CKEditorComponent extends HTMLElement {
       },
     );
     this.editor.enableReadOnlyMode("post-not-loaded");
+    const gfm = this.editor.data.processor as GFMDataProcessor;
+    gfm.keepHtml("ruby");
+    gfm.keepHtml("div");
   };
 
   render() {
