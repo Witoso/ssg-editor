@@ -165,7 +165,5 @@ app.post("/posts/create", async (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(
-    `⚡️[SSG EDITOR]: Server is running at http://localhost:${port}`,
-  );
+  console.log(`⚡️[SSG EDITOR]: Server is running at http://localhost:${port}`);
 });

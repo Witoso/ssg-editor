@@ -65,7 +65,7 @@ export class PostsSelect extends HTMLElement {
 
     const postsFilenames = PostsListResponseSchema.parse(data);
 
-    if (!!postsFilenames.filenames.length) {
+    if (postsFilenames.filenames.length) {
       this.isLoading = false;
     }
 
@@ -124,7 +124,7 @@ export class PostsSelect extends HTMLElement {
   }
 
   private listenForRefresh = () => {
-    document.addEventListener("refresh-posts", (_event: Event) => {
+    document.addEventListener("refresh-posts", () => {
       this.refresh();
     });
   };

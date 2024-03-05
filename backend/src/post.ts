@@ -11,8 +11,13 @@ export class Post {
     this.content = content.replace(
       frontmatterRegex,
       (_match, frontmatterContent) => {
-        const cleanedFrontmatter =  frontmatterContent.replace(/\\+([[\]\-_>"'])/g, "$1"); // yaml frontmatter can have unescaped chars like [, > or -. Those escapes can appear in JSON.
-        return `---\n${cleanedFrontmatter}\n---`
+        // yaml frontmatter can have unescaped chars like [, > or -.
+        // Those escapes can appear in JSON.
+        const cleanedFrontmatter = frontmatterContent.replace(
+          /\\+([[\]\-_>"'])/g,
+          "$1",
+        );
+        return `---\n${cleanedFrontmatter}\n---`;
       },
     );
   }
@@ -32,6 +37,12 @@ export class Post {
       filename: this.fileName,
     };
   }
+}
+
+interface Directory {
+  name: string;
+  files: Post[];
+  children: Directory[];
 }
 
 export async function postExists(filePath: string): Promise<boolean> {
@@ -68,21 +79,31 @@ function parsePost(postFromFile: string, filePath: string): Post {
   return new Post(postFromFile, filePath);
 }
 
-// TODO: nested posts
-export async function findPostsInDirectory(directory: string): Promise<Post[]> {
-  const posts = [];
-  try {
-    const files = await readdir(directory);
-    const mdFiles = files
-      .filter((file) => extname(file) === ".md")
-      .map((file) => join(directory, file));
+export async function findPostsInDirectory(
+  directory: string,
+): Promise<Directory> {
+  const directoryStructure: Directory = {
+    name: basename(directory),
+    files: [],
+    children: [],
+  };
 
-    mdFiles.map(async (file) => {
-      posts.push(parsePostFromFile(file));
-    });
-    return Promise.all(posts);
+  try {
+    const items = await readdir(directory, { withFileTypes: true });
+
+    for (const item of items) {
+      const itemPath = join(directory, item.name);
+      if (item.isDirectory()) {
+        const childDirectory = await findPostsInDirectory(itemPath);
+        directoryStructure.children.push(childDirectory);
+      } else if (extname(item.name) === ".md") {
+        const post = await parsePostFromFile(itemPath);
+        directoryStructure.files.push(post);
+      }
+    }
   } catch (error) {
     console.error("Error reading directory:", error);
-    return [];
   }
+
+  return directoryStructure;
 }

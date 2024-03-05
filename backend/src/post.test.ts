@@ -9,16 +9,26 @@ import {
 } from "./post.js";
 
 const files = ["test.md", "test2.md", "file.txt"];
+const dirs = ["dir1/"];
 const dirPath = "/tmp/static-wyswig-test/";
 const postInFile = "---\ntitle: Title\n---\n\n# Heading 1";
 
 beforeAll(() => {
   fs.mkdirSync(dirPath);
 
-  files.map((filename) => {
+  files.forEach((filename) => {
     const filehandle = fs.openSync(dirPath + filename, "w");
     fs.writeSync(filehandle, postInFile);
     fs.closeSync(filehandle);
+  });
+
+  dirs.forEach((dir) => {
+    fs.mkdirSync(dirPath + dir);
+    files.forEach((filename) => {
+      const filehandle = fs.openSync(dirPath + dir + filename, "w");
+      fs.writeSync(filehandle, postInFile);
+      fs.closeSync(filehandle);
+    });
   });
 });
 
@@ -36,10 +46,12 @@ test("a post has proper string representation", () => {
 
 test("a post has proper escaping of frontmatter", () => {
   const post = new Post(
-    "---\ntitle: Title\narray: \\[\"one\"\\]\n---\n\n# Heading 1",
+    '---\ntitle: Title\narray: \\["one"\\]\n---\n\n# Heading 1',
     "/tmp/post.md",
   );
-  expect(post.toString()).toBe("---\ntitle: Title\narray: [\"one\"]\n---\n\n# Heading 1");
+  expect(post.toString()).toBe(
+    '---\ntitle: Title\narray: ["one"]\n---\n\n# Heading 1',
+  );
 });
 
 test("it writes post to a file", async () => {
@@ -66,23 +78,28 @@ test("it parses a post from a file", async () => {
   expect(parsedPost.content).toBe(postInFile);
 });
 
-test("it lists all posts in a directory", async () => {
-  const posts = await findPostsInDirectory(dirPath);
+test("it lists all markdown posts in a directory", async () => {
+  const root = await findPostsInDirectory(dirPath);
 
-  const markdownFilePaths = posts.map((post) => {
+  expect(root.name).toEqual("static-wyswig-test");
+
+  const rootMarkdownFilePaths = root.files.map((post) => {
     return post.filePath;
   });
 
-  const markdownFilenames = posts.map((post) => {
+  const rootMarkdownFilenames = root.files.map((post) => {
     return post.fileName;
   });
 
-  expect(markdownFilePaths).toEqual([
+  expect(rootMarkdownFilePaths).toEqual([
     `${dirPath}test.md`,
     `${dirPath}test2.md`,
   ]);
+  expect(rootMarkdownFilenames).toEqual([`test.md`, `test2.md`]);
 
-  expect(markdownFilenames).toEqual([`test.md`, `test2.md`]);
+  expect(root.children[0].name).toBe("dir1");
+
+  expect(root.children[0].files).not.toHaveLength(0);
 });
 
 test("a post has JSON representation", () => {
