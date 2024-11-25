@@ -1,0 +1,55 @@
+---
+import CheckIcon from "pixelarticons/svg/check.svg?url";
+---
+
+<div
+  class="save-container flex items-center px-3 transition-all duration-500 ease-in-out"
+  id="save-status"
+>
+  <!-- Using <img> to show the SVG icon -->
+  <div class="save-icon hidden">
+    <img src={CheckIcon} alt="Save Icon" class="w-6 h-6" />
+  </div>
+
+  <div class="save-spinner hidden flex gap-1 items-center justify-center">
+    <div
+      class="pixel-block w-1 h-1 bg-black animate-pixel-bounce delay-0"
+      style="animation-delay: 0;"
+    >
+    </div>
+    <div
+      class="pixel-block w-1 h-1 bg-black animate-pixel-bounce delay-100"
+      style="animation-delay: 50ms;"
+    >
+    </div>
+    <div
+      class="pixel-block w-1 h-1 bg-black animate-pixel-bounce delay-200"
+      style="animation-delay: 100ms;"
+    >
+    </div>
+    <div
+      class="pixel-block w-1 h-1 bg-black animate-pixel-bounce delay-300"
+      style="animation-delay: 150ms;"
+    >
+    </div>
+  </div>
+</div>
+
+<script>
+  import { isSaving } from "./savingStore.js";
+
+  // Subscribe to the isSaving atom changes
+  isSaving.subscribe((saving) => {
+    const saveStatusContainer = document.getElementById("save-status");
+    const saveIcon = saveStatusContainer?.querySelector(".save-icon");
+    const saveSpinner = saveStatusContainer?.querySelector(".save-spinner");
+
+    if (saving) {
+      saveSpinner?.classList.remove("hidden");
+      saveIcon?.classList.add("hidden");
+    } else {
+      saveSpinner?.classList.add("hidden");
+      saveIcon?.classList.remove("hidden");
+    }
+  });
+</script>
