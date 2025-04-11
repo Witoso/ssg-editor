@@ -19,6 +19,8 @@ export type FileItem = {
   disabled?: boolean;
 };
 
+//TODO show also empty folders
+
 export function FileTree({
   items,
   activePath,

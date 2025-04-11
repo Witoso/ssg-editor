@@ -15,10 +15,7 @@ async function fileExists(filePath: string): Promise<boolean> {
 if (Astro.request.method === "POST") {
   const rootPath = process.cwd(); // Get the root path of the Astro project
   const demoFolderPath = path.join(rootPath, "demo/");
-
-  // Capture the referrer (the URL of the page the user came from)
-  const referrer = Astro.request.headers.get("referer") || "/"; // Default to "/" if no referrer
-  const referrerUrl = new URL(referrer); // Parse the referrer as a URL object
+  const referrer = Astro.request.headers.get("referer") || "/";
 
   try {
     const data = await Astro.request.formData();
@@ -30,39 +27,37 @@ if (Astro.request.method === "POST") {
       newFilename.length < 1 ||
       typeof folderPath !== "string"
     ) {
-      // Append the error to the referrer URL
-      referrerUrl.searchParams.set("error", "invalid_input");
-      return Astro.redirect(referrerUrl.toString());
+      // Store error in cookie instead of URL
+      Astro.cookies.set("flash_error", "invalid_input");
+      return Astro.redirect(referrer);
     }
 
-    // Construct the full file path
     const filePath = path.join(demoFolderPath, folderPath, `${newFilename}.md`);
 
-    // Check if the file already exists
     if (await fileExists(filePath)) {
-      // Append the error to the referrer URL
-      referrerUrl.searchParams.set("error", "file_exists");
-      referrerUrl.searchParams.set("filename", newFilename);
-      return Astro.redirect(referrerUrl.toString());
+      // Store error and filename in cookies
+      Astro.cookies.set("flash_error", "file_exists");
+      Astro.cookies.set("flash_filename", newFilename);
+      return Astro.redirect(referrer);
     }
 
-    // Ensure the directory exists
     await fs.mkdir(path.join(demoFolderPath, folderPath), { recursive: true });
-
-    // Create the file (empty for now)
     await fs.writeFile(filePath, "", "utf-8");
 
-    // Append the success to the referrer URL
-    referrerUrl.searchParams.set("success", "file_created");
-    referrerUrl.searchParams.set("filename", newFilename);
-    return Astro.redirect(referrerUrl.toString());
+    // Store success message in cookies
+    Astro.cookies.set("flash_success", "file_created");
+    Astro.cookies.set("flash_filename", newFilename);
+    const redirectPath = folderPath === "/" 
+      ? `${newFilename}.md` 
+      : `${folderPath}${newFilename}.md`;
+    return Astro.redirect(redirectPath);
   } catch (error) {
     if (error instanceof Error) {
       console.error("Error creating file:", error.message);
     }
-    // Append the server error to the referrer URL
-    referrerUrl.searchParams.set("error", "server_error");
-    return Astro.redirect(referrerUrl.toString());
+    // Store server error in cookie
+    Astro.cookies.set("flash_error", "server_error");
+    return Astro.redirect(referrer);
   }
 }
 ---
