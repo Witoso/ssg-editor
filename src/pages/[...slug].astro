@@ -16,12 +16,11 @@ if (!slug) {
   filePath = slug;
 }
 
-const rootPath = process.cwd(); // get the root path of the astro project
-//TODO get this value from the process arg
-const demoFolderPath = path.join(rootPath, "demo");
-const files = getFiles(demoFolderPath);
+const rootPath = process.cwd();
+const targetPath = process.env.TARGET_PATH || path.join(rootPath, "demo");
+const files = getFiles(targetPath);
 
-const fullPath = path.join(rootPath, "demo", filePath);
+const fullPath = path.join(targetPath, filePath);
 
 let content = "*Select or create a file to edit.*";
 let readOnly = true;
@@ -44,7 +43,6 @@ if (filePath != "") {
     <FileTree
       items={files}
       activePath={`/${slug}`}
-      rootPath={rootPath}
       client:only="react"
     />
   </Fragment>

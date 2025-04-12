@@ -13,7 +13,7 @@ interface AlertProps {
 }
 
 export function Alert({ error, success, filename }: AlertProps) {
-  const alert = useRef(null);
+  const alert = useRef<any>(null);
 
   useEffect(() => {
     if (error || success) {

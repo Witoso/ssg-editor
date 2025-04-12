@@ -24,11 +24,9 @@ export type FileItem = {
 export function FileTree({
   items,
   activePath,
-  rootPath,
 }: {
   items: FileItem[];
   activePath: string;
-  rootPath: string;
 }) {
   const [currentFolderPath, setCurrentFolderPath] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);

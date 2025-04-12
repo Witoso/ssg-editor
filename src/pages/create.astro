@@ -15,7 +15,6 @@ async function fileExists(filePath: string): Promise<boolean> {
 if (Astro.request.method === "POST") {
   const rootPath = process.cwd(); // Get the root path of the Astro project
   const demoFolderPath = path.join(rootPath, "demo/");
-  const referrer = Astro.request.headers.get("referer") || "/";
 
   try {
     const data = await Astro.request.formData();
@@ -29,7 +28,7 @@ if (Astro.request.method === "POST") {
     ) {
       // Store error in cookie instead of URL
       Astro.cookies.set("flash_error", "invalid_input");
-      return Astro.redirect(referrer);
+      return Astro.redirect("/");
     }
 
     const filePath = path.join(demoFolderPath, folderPath, `${newFilename}.md`);
@@ -38,7 +37,7 @@ if (Astro.request.method === "POST") {
       // Store error and filename in cookies
       Astro.cookies.set("flash_error", "file_exists");
       Astro.cookies.set("flash_filename", newFilename);
-      return Astro.redirect(referrer);
+      return Astro.redirect("/");
     }
 
     await fs.mkdir(path.join(demoFolderPath, folderPath), { recursive: true });
@@ -47,17 +46,14 @@ if (Astro.request.method === "POST") {
     // Store success message in cookies
     Astro.cookies.set("flash_success", "file_created");
     Astro.cookies.set("flash_filename", newFilename);
-    const redirectPath = folderPath === "/" 
-      ? `${newFilename}.md` 
-      : `${folderPath}${newFilename}.md`;
-    return Astro.redirect(redirectPath);
+    return Astro.redirect(folderPath === "/" ? "/" : `/${folderPath}`);
   } catch (error) {
     if (error instanceof Error) {
       console.error("Error creating file:", error.message);
     }
     // Store server error in cookie
     Astro.cookies.set("flash_error", "server_error");
-    return Astro.redirect(referrer);
+    return Astro.redirect("/");
   }
 }
 ---
