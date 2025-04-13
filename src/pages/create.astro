@@ -1,0 +1,59 @@
+---
+import fs from "fs/promises";
+import path from "path";
+
+// Utility function to check if a file exists
+async function fileExists(filePath: string): Promise<boolean> {
+  try {
+    await fs.stat(filePath);
+    return true; // File exists
+  } catch {
+    return false; // File does not exist
+  }
+}
+
+if (Astro.request.method === "POST") {
+  const rootPath = process.cwd(); // Get the root path of the Astro project
+  const demoFolderPath = path.join(rootPath, "demo/");
+
+  try {
+    const data = await Astro.request.formData();
+    const newFilename = data.get("filename");
+    const folderPath = data.get("folder-path");
+
+    if (
+      typeof newFilename !== "string" ||
+      newFilename.length < 1 ||
+      typeof folderPath !== "string"
+    ) {
+      // Store error in cookie instead of URL
+      Astro.cookies.set("flash_error", "invalid_input");
+      return Astro.redirect("/");
+    }
+
+    const filePath = path.join(demoFolderPath, folderPath, `${newFilename}.md`);
+
+    if (await fileExists(filePath)) {
+      // Store error and filename in cookies
+      Astro.cookies.set("flash_error", "file_exists");
+      Astro.cookies.set("flash_filename", newFilename);
+      return Astro.redirect("/");
+    }
+
+    await fs.mkdir(path.join(demoFolderPath, folderPath), { recursive: true });
+    await fs.writeFile(filePath, "", "utf-8");
+
+    // Store success message in cookies
+    Astro.cookies.set("flash_success", "file_created");
+    Astro.cookies.set("flash_filename", newFilename);
+    return Astro.redirect(folderPath === "/" ? "/" : `/${folderPath}`);
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error("Error creating file:", error.message);
+    }
+    // Store server error in cookie
+    Astro.cookies.set("flash_error", "server_error");
+    return Astro.redirect("/");
+  }
+}
+---

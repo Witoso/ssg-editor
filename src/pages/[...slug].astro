@@ -1,0 +1,57 @@
+---
+import fs from "fs";
+import path from "path";
+import Page from "../layouts/Page.astro";
+
+import { Editor } from "@/components/Editor";
+import { FileTree } from "@/components/FileTree";
+import { getFiles } from "@/lib/files";
+
+const { slug } = Astro.params;
+
+let filePath: string;
+if (!slug) {
+  filePath = "";
+} else {
+  filePath = slug;
+}
+
+const rootPath = process.cwd();
+const targetPath = process.env.TARGET_PATH || path.join(rootPath, "demo");
+const files = getFiles(targetPath);
+
+const fullPath = path.join(targetPath, filePath);
+
+let content = "*Select or create a file to edit.*";
+let readOnly = true;
+
+if (filePath != "") {
+  if (fs.existsSync(fullPath) && fullPath.endsWith(".md")) {
+    content = fs.readFileSync(fullPath, "utf-8");
+    readOnly = false;
+  } else {
+    return new Response(null, {
+      status: 404,
+      statusText: "Not found",
+    });
+  }
+}
+---
+
+<Page>
+  <Fragment slot="file-tree">
+    <FileTree
+      items={files}
+      activePath={`/${slug}`}
+      client:only="react"
+    />
+  </Fragment>
+  <Fragment slot="editor">
+    <Editor
+      readOnly={readOnly}
+      content={content}
+      filePath={fullPath}
+      client:only="react"
+    />
+  </Fragment>
+</Page>

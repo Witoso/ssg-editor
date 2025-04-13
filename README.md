@@ -1,6 +1,6 @@
 [![npm version](https://badge.fury.io/js/@witoso%2Fssg-editor.svg)](https://badge.fury.io/js/@witoso%2Fssg-editor)
 
-> [!NOTE]  
+> [!NOTE]
 > This is in a beta mode. Things can change 😊
 
 # SSG Editor
@@ -14,7 +14,7 @@ Text editor        ✨ SSG Editor ✨              CMS
 
 ## Installation
 
-> [!IMPORTANT]  
+> [!IMPORTANT]
 > `npm` or any other package manager is required.
 
 Run the command in the terminal. `npm` or any other package manager is required.

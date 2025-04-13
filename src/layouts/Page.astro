@@ -1,0 +1,63 @@
+---
+import Layout from "../layouts/Layout.astro";
+import SavingStatus from "@/components/SavingStatus.astro";
+
+import { Alert } from "@/components/Alert";
+
+import "@shoelace-style/shoelace/dist/themes/light.css";
+
+const error = Astro.cookies.get("flash_error")?.value;
+const success = Astro.cookies.get("flash_success")?.value;
+const filename = Astro.cookies.get("flash_filename")?.value;
+
+// Clear the flash messages after reading
+Astro.cookies.delete("flash_error");
+Astro.cookies.delete("flash_success");
+Astro.cookies.delete("flash_filename");
+---
+
+<Layout title="SSG Editor">
+	<header
+		class="flex justify-between h-12 items-center border-b-2 border-black bg-background"
+	>
+		<h1 class="truncate px-3 text-xl font-mono font-bold tracking-tight">
+			SSG Editor
+		</h1>
+		<SavingStatus />
+	</header>
+
+	<Alert client:load error={error} success={success} filename={filename} client:only="react"/>
+
+	<div class="min-h-screen flex">
+		<!-- Side Panel -->
+		<div
+			class="flex flex-col border-r-2 border-black h-screen min-w-[18rem]"
+		>
+			<div class="flex-grow overflow-y-auto">
+				<h2 class="mb-2 px-3 py-4 text-lg font-mono tracking-tight">
+					Files
+				</h2>
+				<slot name="file-tree" />
+			</div>
+		</div>
+
+		<!-- Main Editor Area -->
+		<div class="flex-grow flex flex-col h-screen relative bg-gray-100">
+			<div
+				class="h-full px-4 py-4 lg:px-8 flex flex-col items-center justify-start overflow-y-auto"
+			>
+				<div
+					class="bg-white w-full max-w-4xl min-h-[500px] p-4 shadow-md"
+				>
+					<slot name="editor" />
+				</div>
+			</div>
+		</div>
+	</div>
+</Layout>
+
+<style>
+	.tree-with-icons::part(label) {
+		@apply font-mono;
+	}
+</style>
