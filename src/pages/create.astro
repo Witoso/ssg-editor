@@ -14,7 +14,7 @@ async function fileExists(filePath: string): Promise<boolean> {
 
 if (Astro.request.method === "POST") {
   const rootPath = process.cwd(); // Get the root path of the Astro project
-  const demoFolderPath = path.join(rootPath, "demo/");
+  const targetPath = process.env.TARGET_PATH || path.join(rootPath, "demo");
 
   try {
     const data = await Astro.request.formData();
@@ -31,7 +31,7 @@ if (Astro.request.method === "POST") {
       return Astro.redirect("/");
     }
 
-    const filePath = path.join(demoFolderPath, folderPath, `${newFilename}.md`);
+    const filePath = path.join(targetPath, folderPath, `${newFilename}.md`);
 
     if (await fileExists(filePath)) {
       // Store error and filename in cookies
@@ -40,7 +40,7 @@ if (Astro.request.method === "POST") {
       return Astro.redirect("/");
     }
 
-    await fs.mkdir(path.join(demoFolderPath, folderPath), { recursive: true });
+    await fs.mkdir(path.join(targetPath, folderPath), { recursive: true });
     await fs.writeFile(filePath, "", "utf-8");
 
     // Store success message in cookies
