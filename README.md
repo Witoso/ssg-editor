@@ -39,6 +39,15 @@ Everything runs locally. When you run the command, you should see the local serv
 
 Navigate to this page in the browser. Create new files or edit the current markdown ones in this folder.
 
+## Development
+
+This project uses `pnpm`.
+
+```sh
+pnpm install
+pnpm run build
+```
+
 ## To do
 - [ ] More CKEditor 5 plugins (dynamic config?)
 - [ ] Tree view of files.
