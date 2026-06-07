@@ -9,7 +9,7 @@ import { CreateDialog } from "./CreateDialog";
 
 import PlusIcon from "pixelarticons/svg/plus.svg?url";
 import FolderIcon from "pixelarticons/svg/folder.svg?url";
-import FileIcon from "pixelarticons/svg/file-alt.svg?url";
+import FileIcon from "pixelarticons/svg/file-text.svg?url";
 
 export type FileItem = {
   name: string;

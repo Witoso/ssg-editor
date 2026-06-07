@@ -3,7 +3,7 @@ import { useRef, useEffect } from "react";
 import SlIcon from "@shoelace-style/shoelace/dist/react/icon/index.js";
 import SlAlert from "@shoelace-style/shoelace/dist/react/alert/index.js";
 
-import AlertIcon from "pixelarticons/svg/alert.svg?url";
+import AlertIcon from "pixelarticons/svg/square-alert.svg?url";
 import CheckIcon from "pixelarticons/svg/check.svg?url";
 
 interface AlertProps {
