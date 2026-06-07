@@ -7,7 +7,11 @@ export const POST: APIRoute = async ({ request }) => {
     const content = await request.json();
     const { filePath, fileContent } = content;
 
-    if (!filePath || !fileContent) {
+    if (
+      typeof filePath !== "string" ||
+      filePath.length < 1 ||
+      typeof fileContent !== "string"
+    ) {
       return new Response(
         JSON.stringify({ error: "File path and content are required." }),
         { status: 400 },

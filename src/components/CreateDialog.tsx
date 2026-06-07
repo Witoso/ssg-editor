@@ -17,11 +17,9 @@ export function CreateDialog({
 }) {
   const [inputValue, setInputValue] = useState<string>("");
 
-  // Handle the sl-change event and replace spaces with hyphens
-  // Handle the sl-change event and replace spaces with hyphens
   const handleSlInput = (event: SlInputEvent) => {
-    const target = event.target as HTMLInputElement; // Cast event target to SlInput
-    const value = target?.value.replace(/\s+/g, "-"); // Replace spaces with hyphens
+    const target = event.target as HTMLInputElement;
+    const value = target?.value.replace(/\s+/g, "-");
     setInputValue(value);
   };
 
@@ -47,7 +45,7 @@ export function CreateDialog({
         <SlInput
           style={{ display: "none" }}
           name="folder-path"
-          value={`${currentFolderPath}/`}
+          value={currentFolderPath}
         ></SlInput>
         <br />
 
