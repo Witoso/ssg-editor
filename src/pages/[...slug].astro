@@ -6,6 +6,7 @@ import Page from "../layouts/Page.astro";
 import { Editor } from "@/components/Editor";
 import { FileTree } from "@/components/FileTree";
 import { getFiles } from "@/lib/files";
+import { resolveMarkdownFilePath } from "@/lib/paths";
 
 const { slug } = Astro.params;
 
@@ -20,13 +21,13 @@ const rootPath = process.cwd();
 const targetPath = process.env.TARGET_PATH || path.join(rootPath, "demo");
 const files = getFiles(targetPath);
 
-const fullPath = path.join(targetPath, filePath);
+const fullPath = resolveMarkdownFilePath(targetPath, filePath);
 
 let content = "*Select or create a file to edit.*";
 let readOnly = true;
 
 if (filePath != "") {
-  if (fs.existsSync(fullPath) && fullPath.endsWith(".md")) {
+  if (fullPath && fs.existsSync(fullPath)) {
     content = fs.readFileSync(fullPath, "utf-8");
     readOnly = false;
   } else {
@@ -50,7 +51,7 @@ if (filePath != "") {
     <Editor
       readOnly={readOnly}
       content={content}
-      filePath={fullPath}
+      filePath={fullPath ?? undefined}
       client:only="react"
     />
   </Fragment>
