@@ -54,8 +54,14 @@ type EditorProps = {
 };
 
 export function Editor({ content, readOnly, filePath }: EditorProps) {
-	const editorRef = useRef(null);
+	const editorRef = useRef<DecoupledEditor | null>(null);
 	const editorToolbarRef = useRef<HTMLDivElement>(null);
+
+	const focusEditor = () => {
+		if (!readOnly) {
+			editorRef.current?.editing.view.focus();
+		}
+	};
 
 	const saveData = (editor: DecoupledEditor) => {
 		const content = editor.getDataWithFrontmatter();
@@ -79,10 +85,10 @@ export function Editor({ content, readOnly, filePath }: EditorProps) {
 	};
 
 	return (
-		<>
+		<div className="ssge-editor">
 			<div className="editor-container__toolbar" ref={editorToolbarRef}></div>
-			<div className="w-full h-full flex justify-center">
-				<div ref={editorRef} className="prose w-full">
+			<div className="ssge-editor__editable-shell" onClick={focusEditor}>
+				<div className="prose w-full">
 					<CKEditor
 						editor={DecoupledEditor as any}
 						config={{
@@ -206,6 +212,7 @@ export function Editor({ content, readOnly, filePath }: EditorProps) {
 							},
 						}}
 						onReady={(editor) => {
+							editorRef.current = editor as DecoupledEditor;
 							editor.setDataWithFrontmatter(content!);
 							const toolbar = editor.ui?.view?.toolbar;
 							if (editorToolbarRef?.current && toolbar?.element) {
@@ -216,6 +223,6 @@ export function Editor({ content, readOnly, filePath }: EditorProps) {
 					/>
 				</div>
 			</div>
-		</>
+		</div>
 	);
 }
