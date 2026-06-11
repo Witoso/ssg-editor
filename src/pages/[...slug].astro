@@ -1,12 +1,14 @@
 ---
 import fs from "fs";
-import path from "path";
 import Page from "../layouts/Page.astro";
 
 import { Editor } from "@/components/Editor";
 import { FileTree } from "@/components/FileTree";
+import { loadConfig } from "@/lib/config";
 import { getFiles } from "@/lib/files";
-import { resolveMarkdownFilePath } from "@/lib/paths";
+import { resolvePublicImagePath } from "@/lib/images";
+import { getTargetPath, resolveMarkdownFilePath } from "@/lib/paths";
+import { imageResponse } from "@/lib/responses";
 
 const { slug } = Astro.params;
 
@@ -17,8 +19,20 @@ if (!slug) {
   filePath = slug;
 }
 
-const rootPath = process.cwd();
-const targetPath = process.env.TARGET_PATH || path.join(rootPath, "demo");
+const targetPath = getTargetPath();
+const config = await loadConfig();
+const imagePath = resolvePublicImagePath({
+  targetPath,
+  uploadDir: config.images.uploadDir,
+  publicPath: config.images.publicPath,
+  requestPath: filePath,
+});
+const uploadedImageResponse = imagePath ? imageResponse(imagePath) : null;
+
+if (uploadedImageResponse) {
+  return uploadedImageResponse;
+}
+
 const files = getFiles(targetPath);
 
 const fullPath = resolveMarkdownFilePath(targetPath, filePath);

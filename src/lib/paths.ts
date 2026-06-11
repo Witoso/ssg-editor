@@ -1,5 +1,9 @@
 import path from "path";
 
+export function getTargetPath(): string {
+  return process.env.TARGET_PATH || path.join(process.cwd(), "demo");
+}
+
 export function resolveTargetFilePath(
   targetPath: string,
   requestedPath: string,

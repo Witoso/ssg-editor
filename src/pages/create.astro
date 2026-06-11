@@ -2,6 +2,8 @@
 import fs from "fs/promises";
 import path from "path";
 
+import { getTargetPath } from "@/lib/paths";
+
 // Utility function to check if a file exists
 async function fileExists(filePath: string): Promise<boolean> {
   try {
@@ -23,8 +25,7 @@ function getFolderSegments(folderPath: string): string[] | null {
 }
 
 if (Astro.request.method === "POST") {
-  const rootPath = process.cwd(); // Get the root path of the Astro project
-  const targetPath = process.env.TARGET_PATH || path.join(rootPath, "demo");
+  const targetPath = getTargetPath();
 
   try {
     const data = await Astro.request.formData();

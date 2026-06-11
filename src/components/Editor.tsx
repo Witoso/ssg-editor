@@ -21,6 +21,7 @@ import {
 	ImageStyle,
 	ImageTextAlternative,
 	ImageToolbar,
+	ImageUpload,
 	Italic,
 	Link,
 	List,
@@ -38,6 +39,7 @@ import {
 	TableToolbar,
 	TextTransformation,
 	DecoupledEditor,
+	SimpleUploadAdapter,
 } from "ckeditor5";
 
 import { Frontmatter } from "@witoso/ckeditor5-frontmatter";
@@ -113,6 +115,7 @@ export function Editor({ content, readOnly, filePath }: EditorProps) {
 								ImageStyle,
 								ImageTextAlternative,
 								ImageToolbar,
+								ImageUpload,
 								Italic,
 								Link,
 								List,
@@ -129,6 +132,7 @@ export function Editor({ content, readOnly, filePath }: EditorProps) {
 								TableProperties,
 								TableToolbar,
 								TextTransformation,
+								SimpleUploadAdapter,
 							],
 							balloonToolbar: [
 								"bold",
@@ -154,6 +158,7 @@ export function Editor({ content, readOnly, filePath }: EditorProps) {
 								"code",
 								"|",
 								"link",
+								"uploadImage",
 								"insertTable",
 								"blockQuote",
 								"codeBlock",
@@ -183,6 +188,9 @@ export function Editor({ content, readOnly, filePath }: EditorProps) {
 								styles: {
 									options: ["alignBlockLeft", "block", "alignBlockRight"],
 								},
+							},
+							simpleUpload: {
+								uploadUrl: "/upload",
 							},
 							link: {
 								addTargetToExternalLinks: true,

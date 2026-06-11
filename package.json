@@ -8,8 +8,8 @@
     "ssge": "./bin/ssge.js"
   },
   "scripts": {
-    "dev": "astro dev",
-    "start": "astro dev",
+    "dev": "node scripts/dev.js",
+    "start": "node scripts/dev.js",
     "build": "astro check && astro build",
     "test": "vitest run",
     "test:browser": "vitest --browser",

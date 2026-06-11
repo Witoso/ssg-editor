@@ -18,6 +18,11 @@ if (!targetPath) {
 
 // Resolve the absolute path
 const absoluteTargetPath = resolve(targetPath);
+const configCandidates = [
+  join(absoluteTargetPath, '.sserc.js'),
+  join(process.cwd(), '.sserc.js')
+];
+const resolvedConfigPath = configCandidates.find((candidate) => existsSync(candidate)) ?? '';
 
 if (!existsSync(absoluteTargetPath)) {
   console.error(`The path "${absoluteTargetPath}" does not exist`);
@@ -28,13 +33,17 @@ if (!existsSync(absoluteTargetPath)) {
 const distPath = join(__dirname, '..', 'dist');
 
 console.log(`Starting SSG Editor for folder: ${absoluteTargetPath}`);
+if (resolvedConfigPath) {
+  console.log(`Using config: ${resolvedConfigPath}`);
+}
 console.log('Press Ctrl+C to stop the server');
 
 // Spawn the server process
 const server = spawn('node', [join(distPath, 'server', 'entry.mjs')], {
   env: {
     ...process.env,
-    TARGET_PATH: absoluteTargetPath
+    TARGET_PATH: absoluteTargetPath,
+    SSG_EDITOR_CONFIG_PATH: resolvedConfigPath
   },
   stdio: 'inherit'
 });

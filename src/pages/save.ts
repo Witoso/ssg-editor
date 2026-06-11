@@ -1,14 +1,13 @@
 import fs from "fs/promises";
 import path from "path";
 import type { APIRoute } from "astro";
-import { resolveMarkdownFilePath } from "@/lib/paths";
+import { getTargetPath, resolveMarkdownFilePath } from "@/lib/paths";
 
 export const POST: APIRoute = async ({ request }) => {
   try {
     const content = await request.json();
     const { filePath, fileContent } = content;
-    const rootPath = process.cwd();
-    const targetPath = process.env.TARGET_PATH || path.join(rootPath, "demo");
+    const targetPath = getTargetPath();
 
     if (
       typeof filePath !== "string" ||

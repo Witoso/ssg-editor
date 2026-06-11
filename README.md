@@ -39,6 +39,23 @@ Everything runs locally. When you run the command, you should see the local serv
 
 Navigate to this page in the browser. Create new files or edit the current markdown ones in this folder.
 
+## Configuration
+
+SSG Editor reads optional configuration from `.sserc.js` in the edited folder,
+falling back to the directory where you run the `ssge` command.
+
+```js
+export default {
+  images: {
+    uploadDir: "public/uploads",
+    publicPath: "/uploads",
+  },
+};
+```
+
+Image uploads are written to `uploadDir`, relative to the edited folder. The
+editor inserts URLs using `publicPath`.
+
 ## Development
 
 This project uses `pnpm`.
@@ -47,6 +64,10 @@ This project uses `pnpm`.
 pnpm install
 pnpm run build
 ```
+
+For local development, `pnpm start` copies `test/fixtures/site` to a temporary
+directory and launches Astro against that copy, using the fixture `.sserc.js`
+config. This keeps editor autosaves out of Vite's watched project files.
 
 ## To do
 - [ ] More CKEditor 5 plugins (dynamic config?)
