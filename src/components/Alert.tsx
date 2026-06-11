@@ -2,6 +2,7 @@ import { useRef, useEffect } from "react";
 
 import SlIcon from "@shoelace-style/shoelace/dist/react/icon/index.js";
 import SlAlert from "@shoelace-style/shoelace/dist/react/alert/index.js";
+import type SlAlertElement from "@shoelace-style/shoelace/dist/components/alert/alert.js";
 
 import AlertIcon from "pixelarticons/svg/square-alert.svg?url";
 import CheckIcon from "pixelarticons/svg/check.svg?url";
@@ -13,7 +14,7 @@ interface AlertProps {
 }
 
 export function Alert({ error, success, filename }: AlertProps) {
-  const alert = useRef<any>(null);
+  const alert = useRef<SlAlertElement>(null);
 
   useEffect(() => {
     if (error || success) {

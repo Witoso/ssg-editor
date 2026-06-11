@@ -92,7 +92,7 @@ export function Editor({ content, readOnly, filePath }: EditorProps) {
 			<div className="ssge-editor__editable-shell" onClick={focusEditor}>
 				<div className="prose w-full">
 					<CKEditor
-						editor={DecoupledEditor as any}
+						editor={DecoupledEditor}
 						config={{
 							licenseKey: 'GPL',
 							plugins: [
