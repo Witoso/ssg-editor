@@ -1,5 +1,6 @@
 ---
 import fs from "fs/promises";
+import path from "path";
 import Page from "../layouts/Page.astro";
 
 import { Editor } from "@/components/Editor";
@@ -15,8 +16,7 @@ const files = await getFiles(targetPath);
 
 const fullPath = resolveMarkdownFilePath(targetPath, filePath);
 
-let content = "*Select or create a file to edit.*";
-let readOnly = true;
+let content = "";
 
 if (filePath != "") {
   if (!fullPath) {
@@ -25,23 +25,29 @@ if (filePath != "") {
 
   try {
     content = await fs.readFile(fullPath, "utf-8");
-    readOnly = false;
   } catch {
     return new Response(null, { status: 404, statusText: "Not found" });
   }
 }
+
+const filename = filePath ? path.basename(filePath) : undefined;
 ---
 
-<Page>
+<Page title={filename}>
   <Fragment slot="file-tree">
     <FileTree items={files} activePath={`/${slug}`} client:only="react" />
   </Fragment>
   <Fragment slot="editor">
-    <Editor
-      readOnly={readOnly}
-      content={content}
-      filePath={filePath || undefined}
-      client:only="react"
-    />
+    {
+      filePath ? (
+        <Editor content={content} filePath={filePath} client:only="react" />
+      ) : (
+        <div class="flex h-full items-center justify-center p-8">
+          <p class="font-mono text-gray-500">
+            Select or create a file from the sidebar.
+          </p>
+        </div>
+      )
+    }
   </Fragment>
 </Page>

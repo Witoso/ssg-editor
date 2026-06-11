@@ -1,25 +1,31 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import SavingStatus from "@/components/SavingStatus.astro";
 
 import { Alert } from "@/components/Alert";
+import { SavingStatus } from "@/components/SavingStatus";
 import { readFlash } from "@/lib/flash";
 
 import "@shoelace-style/shoelace/dist/themes/light.css";
 import CollapseSidebarIcon from "pixelarticons/svg/arrow-bar-left.svg?url";
 import ExpandSidebarIcon from "pixelarticons/svg/arrow-bar-right.svg?url";
 
+interface Props {
+  title?: string;
+}
+
+const { title } = Astro.props;
+
 const { error, success, filename } = readFlash(Astro.cookies);
 ---
 
-<Layout title="SSG Editor">
+<Layout title={title ? `${title} — SSG Editor` : "SSG Editor"}>
   <header
     class="flex justify-between h-12 items-center border-b-2 border-black bg-background"
   >
     <h1 class="truncate px-3 text-xl font-mono font-bold tracking-tight">
       SSG Editor
     </h1>
-    <SavingStatus />
+    <SavingStatus client:only="react" />
   </header>
 
   <Alert
@@ -30,6 +36,14 @@ const { error, success, filename } = readFlash(Astro.cookies);
   />
 
   <div class="editor-shell flex">
+    <!-- Backdrop closes the overlay sidebar on small screens -->
+    <button
+      type="button"
+      class="sidebar-backdrop"
+      id="file-sidebar-backdrop"
+      aria-label="Close file sidebar"
+      tabindex="-1"
+      hidden></button>
     <!-- Side Panel -->
     <div
       class="sidebar-panel flex flex-col border-r-2 border-black"
@@ -183,6 +197,14 @@ const { error, success, filename } = readFlash(Astro.cookies);
     min-height: 24rem;
   }
 
+  .sidebar-backdrop {
+    display: none;
+    border: 0;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+  }
+
   @media (max-width: 640px) {
     .editor-shell {
       position: relative;
@@ -205,31 +227,78 @@ const { error, success, filename } = readFlash(Astro.cookies);
     .editor-panel {
       width: 100%;
     }
+
+    /* Backdrop sits under the open overlay sidebar but over the editor. */
+    .sidebar-backdrop:not([hidden]) {
+      display: block;
+      position: absolute;
+      inset: 0;
+      z-index: 900;
+      background: rgb(0 0 0 / 0.32);
+    }
   }
 </style>
 
 <script>
-  const sidebar = document.getElementById("file-sidebar");
-  const toggle = document.getElementById("file-sidebar-toggle");
+  const isNarrow = () => window.matchMedia("(max-width: 640px)").matches;
 
   const setSidebarCollapsed = (isCollapsed: boolean) => {
-    sidebar?.classList.toggle("is-collapsed", isCollapsed);
-    toggle?.setAttribute("aria-expanded", String(!isCollapsed));
-    toggle?.setAttribute(
+    const sidebar = document.getElementById("file-sidebar");
+    const toggle = document.getElementById("file-sidebar-toggle");
+    const backdrop = document.getElementById("file-sidebar-backdrop");
+
+    if (!sidebar || !toggle) {
+      return;
+    }
+
+    sidebar.classList.toggle("is-collapsed", isCollapsed);
+    toggle.setAttribute("aria-expanded", String(!isCollapsed));
+    toggle.setAttribute(
       "aria-label",
       isCollapsed ? "Expand file sidebar" : "Collapse file sidebar",
     );
-    toggle?.setAttribute(
+    toggle.setAttribute(
       "title",
       isCollapsed ? "Expand file sidebar" : "Collapse file sidebar",
     );
+    if (backdrop) {
+      backdrop.hidden = isCollapsed || !isNarrow();
+    }
   };
 
-  if (window.matchMedia("(max-width: 640px)").matches) {
-    setSidebarCollapsed(true);
-  }
+  // Binds listeners to the freshly rendered header/sidebar after every
+  // navigation — the ClientRouter swaps that DOM, dropping prior listeners.
+  const setupSidebar = () => {
+    const sidebar = document.getElementById("file-sidebar");
+    const toggle = document.getElementById("file-sidebar-toggle");
+    const backdrop = document.getElementById("file-sidebar-backdrop");
 
-  toggle?.addEventListener("click", () => {
-    setSidebarCollapsed(!sidebar?.classList.contains("is-collapsed"));
+    if (!sidebar || !toggle) {
+      return;
+    }
+
+    // Collapse by default on small screens (e.g. after opening a file).
+    setSidebarCollapsed(isNarrow());
+
+    toggle.addEventListener("click", () => {
+      setSidebarCollapsed(!sidebar.classList.contains("is-collapsed"));
+    });
+
+    backdrop?.addEventListener("click", () => setSidebarCollapsed(true));
+  };
+
+  // Document-level listener is bound once; it reads current DOM at fire time.
+  document.addEventListener("keydown", (event) => {
+    const sidebar = document.getElementById("file-sidebar");
+    if (
+      event.key === "Escape" &&
+      isNarrow() &&
+      sidebar &&
+      !sidebar.classList.contains("is-collapsed")
+    ) {
+      setSidebarCollapsed(true);
+    }
   });
+
+  document.addEventListener("astro:page-load", setupSidebar);
 </script>

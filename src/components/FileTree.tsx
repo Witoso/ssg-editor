@@ -3,6 +3,7 @@ import { useState } from "react";
 import SlIcon from "@shoelace-style/shoelace/dist/react/icon/index.js";
 import SlTree from "@shoelace-style/shoelace/dist/react/tree/index.js";
 import SlTreeItem from "@shoelace-style/shoelace/dist/react/tree-item/index.js";
+import type SlTreeItemElement from "@shoelace-style/shoelace/dist/components/tree-item/tree-item.js";
 
 import { navigate } from "astro:transitions/client";
 import { CreateDialog } from "./CreateDialog";
@@ -19,8 +20,6 @@ export type FileItem = {
   disabled?: boolean;
 };
 
-//TODO show also empty folders
-
 export function FileTree({
   items,
   activePath,
@@ -31,14 +30,51 @@ export function FileTree({
   const [currentFolderPath, setCurrentFolderPath] = useState("");
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const handleFileItemClick = (fullPath: string) => {
-    navigate(fullPath);
+  // The tree's own selection event covers both mouse and keyboard
+  // (arrow keys + Enter), so navigation lives here instead of per-item
+  // click handlers.
+  const handleSelectionChange = (
+    event: CustomEvent<{ selection: SlTreeItemElement[] }>,
+  ) => {
+    const selected = event.detail.selection[0];
+
+    if (!selected) {
+      return;
+    }
+
+    // Keyboard (Enter on a focused create row) routes through selection.
+    const createIn = selected.dataset.createIn;
+
+    if (createIn !== undefined) {
+      openCreateDialog(createIn);
+      return;
+    }
+
+    const filePath = selected.dataset.path;
+
+    if (filePath && filePath !== activePath) {
+      navigate(filePath);
+    }
   };
 
-  const handleCreateFileClick = (folderPath: string) => {
+  const openCreateDialog = (folderPath: string) => {
     setCurrentFolderPath(folderPath);
     setIsDialogOpen(true);
   };
+
+  const renderCreateItem = (folderPath: string) => (
+    <SlTreeItem
+      key={`${folderPath}/create-file`}
+      className="create-file-item"
+      data-create-in={folderPath}
+      // Mouse clicks on create rows don't reliably surface through the
+      // tree's selection event, so handle them explicitly.
+      onClick={() => openCreateDialog(folderPath)}
+    >
+      <SlIcon src={PlusIcon} />
+      Create a file
+    </SlTreeItem>
+  );
 
   const renderTreeItems = (items: FileItem[], parentPath: string = "") => {
     return items.map((item) => {
@@ -48,9 +84,8 @@ export function FileTree({
         return (
           <SlTreeItem
             key={fullPath}
-            disabled={item.disabled}
             selected={fullPath === activePath}
-            onClick={() => handleFileItemClick(fullPath)}
+            data-path={fullPath}
           >
             <SlIcon src={FileIcon} />
             {item.name}
@@ -63,13 +98,7 @@ export function FileTree({
             {item.name}
             {item.children && renderTreeItems(item.children, fullPath)}
             {/* Add "Create a file" entry at the end of each folder */}
-            <SlTreeItem
-              key={`${fullPath}/create-file`}
-              onClick={() => handleCreateFileClick(fullPath)}
-            >
-              <SlIcon src={PlusIcon} />
-              <em>Create a file</em>
-            </SlTreeItem>
+            {renderCreateItem(fullPath)}
           </SlTreeItem>
         );
       }
@@ -78,16 +107,13 @@ export function FileTree({
 
   return (
     <>
-      <SlTree className="tree-with-icons">
+      <SlTree
+        className="tree-with-icons"
+        onSlSelectionChange={handleSelectionChange}
+      >
         {renderTreeItems(items)}
         {/* Add "Create a file" entry at the root level */}
-        <SlTreeItem
-          key="root-create-file"
-          onClick={() => handleCreateFileClick("")}
-        >
-          <SlIcon src={PlusIcon} />
-          <em>Create a file</em>
-        </SlTreeItem>
+        {renderCreateItem("")}
       </SlTree>
       <CreateDialog
         isDialogOpen={isDialogOpen}

@@ -1,10 +1,11 @@
-import { useState, type Dispatch, type SetStateAction } from "react";
+import { useRef, useState, type Dispatch, type SetStateAction } from "react";
 
 import SlButton from "@shoelace-style/shoelace/dist/react/button/index.js";
 import SlDialog from "@shoelace-style/shoelace/dist/react/dialog/index.js";
 import SlInput, {
   type SlInputEvent,
 } from "@shoelace-style/shoelace/dist/react/input/index.js";
+import type SlInputElement from "@shoelace-style/shoelace/dist/components/input/input.js";
 
 import { FILENAME_PATTERN } from "@/lib/filenames";
 
@@ -18,6 +19,7 @@ export function CreateDialog({
   currentFolderPath: string;
 }) {
   const [inputValue, setInputValue] = useState<string>("");
+  const filenameRef = useRef<SlInputElement>(null);
 
   const handleSlInput = (event: SlInputEvent) => {
     const target = event.target as HTMLInputElement;
@@ -27,16 +29,24 @@ export function CreateDialog({
 
   // TODO Creating folders
   return (
-    <SlDialog open={isDialogOpen} onSlAfterHide={() => setIsDialogOpen(false)}>
+    <SlDialog
+      open={isDialogOpen}
+      // autoFocus doesn't reach a web component's inner input; focus it once
+      // the dialog has finished animating in.
+      onSlAfterShow={() => filenameRef.current?.focus()}
+      onSlAfterHide={() => {
+        setInputValue("");
+        setIsDialogOpen(false);
+      }}
+    >
       <h1 slot="label">Create a new file</h1>
       <form action="/create" method="POST">
         <SlInput
-          autoFocus
+          ref={filenameRef}
           name="filename"
           value={inputValue}
           placeholder="Enter the name that will go before .md"
-          onSlInput={handleSlInput} // Listen for the sl-change event
-          help-text=""
+          onSlInput={handleSlInput}
           required
           label="File name"
           pattern={FILENAME_PATTERN}
@@ -44,11 +54,7 @@ export function CreateDialog({
           <span slot="prefix">{`${currentFolderPath}/`}</span>
           <span slot="suffix">.md</span>
         </SlInput>
-        <SlInput
-          style={{ display: "none" }}
-          name="folder-path"
-          value={currentFolderPath}
-        ></SlInput>
+        <input type="hidden" name="folder-path" value={currentFolderPath} />
         <br />
 
         <SlButton type="submit" variant="primary">

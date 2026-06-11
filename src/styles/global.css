@@ -1,2 +1,8 @@
 @config "../../tailwind.config.mjs";
 @import "tailwindcss";
+
+/* "Create a file" tree entries are actions, not files; mute and italicize. */
+sl-tree-item.create-file-item::part(label) {
+  color: var(--color-gray-500, #6b7280);
+  font-style: italic;
+}

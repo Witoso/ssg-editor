@@ -1,4 +1,5 @@
 import { expect, test, vi } from "vitest";
+import { userEvent } from "vitest/browser";
 import { render } from "vitest-browser-react";
 
 import { navigate } from "astro:transitions/client";
@@ -52,6 +53,21 @@ test("navigates to a file when an enabled file item is clicked", async () => {
   const screen = await render(<FileTree items={items} activePath="" />);
 
   await screen.getByText("first.md").click();
+
+  expect(navigate).toHaveBeenCalledWith("/notes/first.md");
+});
+
+test("opens a file with the keyboard", async () => {
+  vi.mocked(navigate).mockClear();
+  await render(<FileTree items={items} activePath="" />);
+
+  // Focusing the tree focuses its first item (the "notes" folder);
+  // arrow down to its first file, then select it.
+  const tree = document.querySelector("sl-tree") as HTMLElement;
+  tree.focus();
+
+  await userEvent.keyboard("{ArrowDown}");
+  await userEvent.keyboard("{Enter}");
 
   expect(navigate).toHaveBeenCalledWith("/notes/first.md");
 });
