@@ -29,7 +29,8 @@ export function findConfigPath(cwd: string = process.cwd()): string | null {
 }
 
 export async function loadConfig(
-  configPath: string | null = process.env.SSG_EDITOR_CONFIG_PATH ?? findConfigPath(),
+  configPath: string | null = process.env.SSG_EDITOR_CONFIG_PATH ??
+    findConfigPath(),
 ): Promise<SsgEditorConfig> {
   if (!configPath) {
     return defaultConfig;
@@ -37,12 +38,18 @@ export async function loadConfig(
 
   try {
     const configUrl = pathToFileURL(configPath);
-    configUrl.searchParams.set("mtime", String(fs.statSync(configPath).mtimeMs));
+    configUrl.searchParams.set(
+      "mtime",
+      String(fs.statSync(configPath).mtimeMs),
+    );
 
     const module = await import(/* @vite-ignore */ configUrl.href);
     return normalizeConfig(module.default ?? module);
   } catch (error) {
-    console.error(`Failed to load config "${configPath}", using defaults:`, error);
+    console.error(
+      `Failed to load config "${configPath}", using defaults:`,
+      error,
+    );
     return defaultConfig;
   }
 }
@@ -53,7 +60,10 @@ export function normalizeConfig(userConfig: UserConfig): SsgEditorConfig {
     defaultConfig.images.uploadDir,
   );
   const publicPath = normalizePublicPath(
-    stringOrDefault(userConfig.images?.publicPath, defaultConfig.images.publicPath),
+    stringOrDefault(
+      userConfig.images?.publicPath,
+      defaultConfig.images.publicPath,
+    ),
   );
 
   return {

@@ -14,7 +14,9 @@ const devTargetPath = join(tmpdir(), "ssg-editor-dev-site");
 const args = process.argv.slice(2);
 const forwardedArgs = args[0] === "--" ? args.slice(1) : args;
 const hasTargetArg = forwardedArgs[0] && !forwardedArgs[0].startsWith("-");
-const targetPath = resolve(hasTargetArg ? forwardedArgs[0] : prepareDevTargetPath());
+const targetPath = resolve(
+  hasTargetArg ? forwardedArgs[0] : prepareDevTargetPath(),
+);
 const astroArgs = hasTargetArg ? forwardedArgs.slice(1) : forwardedArgs;
 const configPath = join(targetPath, ".sserc.js");
 

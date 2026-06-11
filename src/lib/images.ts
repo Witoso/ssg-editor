@@ -11,7 +11,10 @@ export const allowedImageTypes = new Map([
 ]);
 
 const imageContentTypes = new Map(
-  [...allowedImageTypes.entries()].map(([type, extension]) => [extension, type]),
+  [...allowedImageTypes.entries()].map(([type, extension]) => [
+    extension,
+    type,
+  ]),
 );
 
 export function getImageExtension(file: File): string | null {
@@ -89,7 +92,10 @@ export function resolvePublicImagePath({
     return null;
   }
 
-  const relativeToUploadDir = path.relative(resolvedUploadDir, resolvedImagePath);
+  const relativeToUploadDir = path.relative(
+    resolvedUploadDir,
+    resolvedImagePath,
+  );
 
   if (
     relativeToUploadDir === "" ||
@@ -102,7 +108,10 @@ export function resolvePublicImagePath({
   return resolvedImagePath;
 }
 
-export function getPublicImageUrl(publicPath: string, filename: string): string {
+export function getPublicImageUrl(
+  publicPath: string,
+  filename: string,
+): string {
   return `${publicPath.replace(/\/+$/g, "")}/${filename}`;
 }
 

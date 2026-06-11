@@ -22,13 +22,19 @@ describe("resolveTargetFilePath", () => {
 
   test("rejects absolute paths outside the target path", () => {
     expect(
-      resolveTargetFilePath(targetPath, path.join(path.sep, "tmp", "outside.md")),
+      resolveTargetFilePath(
+        targetPath,
+        path.join(path.sep, "tmp", "outside.md"),
+      ),
     ).toBeNull();
   });
 
   test("does not confuse sibling directories with the target path", () => {
     expect(
-      resolveTargetFilePath(targetPath, path.join(path.sep, "tmp", "site-copy", "post.md")),
+      resolveTargetFilePath(
+        targetPath,
+        path.join(path.sep, "tmp", "site-copy", "post.md"),
+      ),
     ).toBeNull();
   });
 });

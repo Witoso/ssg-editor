@@ -55,11 +55,7 @@ if (filePath != "") {
 
 <Page>
   <Fragment slot="file-tree">
-    <FileTree
-      items={files}
-      activePath={`/${slug}`}
-      client:only="react"
-    />
+    <FileTree items={files} activePath={`/${slug}`} client:only="react" />
   </Fragment>
   <Fragment slot="editor">
     <Editor

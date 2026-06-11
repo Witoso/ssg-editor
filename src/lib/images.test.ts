@@ -14,7 +14,9 @@ describe("images", () => {
     vi.spyOn(Date, "now").mockReturnValue(123);
 
     expect(
-      getSafeImageName(new File(["x"], "My Image 01.PNG", { type: "image/png" })),
+      getSafeImageName(
+        new File(["x"], "My Image 01.PNG", { type: "image/png" }),
+      ),
     ).toBe("123-my-image-01.png");
   });
 
@@ -49,7 +51,9 @@ describe("images", () => {
   });
 
   test("builds public image URLs", () => {
-    expect(getPublicImageUrl("/uploads/", "image.png")).toBe("/uploads/image.png");
+    expect(getPublicImageUrl("/uploads/", "image.png")).toBe(
+      "/uploads/image.png",
+    );
   });
 
   test("resolves public image URLs to upload files", () => {

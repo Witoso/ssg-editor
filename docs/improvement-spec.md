@@ -10,7 +10,7 @@ Context: the working tree contains an uncommitted, finished-looking image-upload
 
 ### 1.1 `PendingActions` listener leaks on every autosave
 
-**Problem:** In `src/components/Editor.tsx:68-87`, `saveData()` attaches a new `pendingActions.on("change:hasAny", …)` listener *every time autosave fires*. After N saves there are N listeners. The subscription belongs in `onReady`, once per editor instance.
+**Problem:** In `src/components/Editor.tsx:68-87`, `saveData()` attaches a new `pendingActions.on("change:hasAny", …)` listener _every time autosave fires_. After N saves there are N listeners. The subscription belongs in `onReady`, once per editor instance.
 
 **Change:** Move the `PendingActions` subscription into the `onReady` callback (or a dedicated effect). `saveData` should only serialize content and POST.
 
@@ -72,7 +72,7 @@ Context: the working tree contains an uncommitted, finished-looking image-upload
 
 **Problem:** `[...slug].astro` passes the **absolute** resolved path into the `Editor` island (`filePath={fullPath}`), which the browser POSTs back to `/save`. It survives `resolveMarkdownFilePath` only by accident of `path.resolve` semantics, and it leaks the server's directory layout into the page payload.
 
-**Change:** Pass the *relative* slug path to the client; `/save` resolves it against `TARGET_PATH` exactly like the page route does. Update `save.test.ts` accordingly.
+**Change:** Pass the _relative_ slug path to the client; `/save` resolves it against `TARGET_PATH` exactly like the page route does. Update `save.test.ts` accordingly.
 
 **Acceptance:** View-source of an editor page contains no absolute paths; saving still works for nested files; traversal attempts (`../x.md`, absolute paths) still rejected.
 
@@ -86,7 +86,7 @@ Context: the working tree contains an uncommitted, finished-looking image-upload
 
 ### 2.4 Upload validation trusts the filename extension
 
-**Problem:** `getImageExtension` (`src/lib/images.ts:17-24`) falls back to the file *name* extension when the MIME type is unrecognized, so any bytes named `x.png` are stored as an image.
+**Problem:** `getImageExtension` (`src/lib/images.ts:17-24`) falls back to the file _name_ extension when the MIME type is unrecognized, so any bytes named `x.png` are stored as an image.
 
 **Change:** Validate magic bytes for the four allowed formats (a few-byte check, no new dependency needed), or at minimum drop the extension fallback and require an allowed `file.type`.
 
@@ -117,11 +117,13 @@ Context: the working tree contains an uncommitted, finished-looking image-upload
 **Decision (owner):** The page-switching-via-Astro-pages architecture stays. `/create` remains a server form POST → redirect → flash flow; Astro's `ClientRouter` already intercepts same-origin form submissions, so this flow gets view transitions for free. Do **not** convert it to a fetch/JSON endpoint.
 
 **Problem:** Within that architecture there are still avoidable inconsistencies:
+
 - `/save` (`src/pages/save.ts`) — JSON API, error shape `{ error: string }`, missing `Content-Type` header on responses.
 - `/upload` (`src/pages/upload.ts`) — JSON API, error shape `{ error: { message } }` (CKEditor's required shape), local `uploadError` helper.
 - `/create` (`src/pages/create.astro`) — renders no page of its own (empty body after the frontmatter); flash cookies are set without explicit `path`/`sameSite`/`httpOnly` options; validation logic lives inline.
 
 **Change:**
+
 - Move the two programmatic endpoints (autosave, image upload — these are not page navigations) under `src/pages/api/` (`/api/save`, `/api/upload`). Add shared `jsonResponse(data, status)` / `errorResponse(message, status)` helpers in `src/lib/responses.ts` (it already exists for images); keep an adapter for CKEditor's upload error shape at the `/api/upload` boundary only.
 - Keep `/create` as a form-POST page route. Extract the flash-cookie set/read into a small `src/lib/flash.ts` helper that sets explicit cookie options (`path: "/"`, `sameSite: "lax"`, `httpOnly`) and reads-and-clears in one call, replacing the hand-rolled blocks in `create.astro` and `Page.astro:11-18`.
 - Share the filename/folder validation between client and server: extract the `[a-zA-Z0-9_-]+` rule and `getFolderSegments` into `src/lib` and import from both `CreateDialog` (input `pattern`) and `create.astro`.
@@ -241,8 +243,12 @@ Context: the working tree contains an uncommitted, finished-looking image-upload
 
   export default [
     ...tseslint.configs.recommended,
-    ...eslintPluginAstro.configs.recommended,        // or configs["jsx-a11y-recommended"]
-    { files: ["src/**/*.{ts,tsx}"], plugins: { "react-hooks": reactHooks }, rules: reactHooks.configs.recommended.rules },
+    ...eslintPluginAstro.configs.recommended, // or configs["jsx-a11y-recommended"]
+    {
+      files: ["src/**/*.{ts,tsx}"],
+      plugins: { "react-hooks": reactHooks },
+      rules: reactHooks.configs.recommended.rules,
+    },
     { ignores: ["dist/", ".astro/", "node_modules/"] },
   ];
   ```
@@ -261,9 +267,7 @@ Context: the working tree contains an uncommitted, finished-looking image-upload
 ```json
 {
   "plugins": ["prettier-plugin-astro"],
-  "overrides": [
-    { "files": "*.astro", "options": { "parser": "astro" } }
-  ]
+  "overrides": [{ "files": "*.astro", "options": { "parser": "astro" } }]
 }
 ```
 

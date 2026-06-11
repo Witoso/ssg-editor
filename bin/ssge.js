@@ -1,9 +1,9 @@
 #!/usr/bin/env node
 
-import { spawn } from 'child_process';
-import { fileURLToPath } from 'url';
-import { dirname, join, resolve } from 'path';
-import { existsSync } from 'fs';
+import { spawn } from "child_process";
+import { fileURLToPath } from "url";
+import { dirname, join, resolve } from "path";
+import { existsSync } from "fs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -12,17 +12,18 @@ const args = process.argv.slice(2);
 const targetPath = args[0];
 
 if (!targetPath) {
-  console.error('Please provide a path to the folder: ssge <path_to_folder>');
+  console.error("Please provide a path to the folder: ssge <path_to_folder>");
   process.exit(1);
 }
 
 // Resolve the absolute path
 const absoluteTargetPath = resolve(targetPath);
 const configCandidates = [
-  join(absoluteTargetPath, '.sserc.js'),
-  join(process.cwd(), '.sserc.js')
+  join(absoluteTargetPath, ".sserc.js"),
+  join(process.cwd(), ".sserc.js"),
 ];
-const resolvedConfigPath = configCandidates.find((candidate) => existsSync(candidate)) ?? '';
+const resolvedConfigPath =
+  configCandidates.find((candidate) => existsSync(candidate)) ?? "";
 
 if (!existsSync(absoluteTargetPath)) {
   console.error(`The path "${absoluteTargetPath}" does not exist`);
@@ -30,33 +31,33 @@ if (!existsSync(absoluteTargetPath)) {
 }
 
 // Get the absolute path to the dist directory
-const distPath = join(__dirname, '..', 'dist');
+const distPath = join(__dirname, "..", "dist");
 
 console.log(`Starting SSG Editor for folder: ${absoluteTargetPath}`);
 if (resolvedConfigPath) {
   console.log(`Using config: ${resolvedConfigPath}`);
 }
-console.log('Press Ctrl+C to stop the server');
+console.log("Press Ctrl+C to stop the server");
 
 // Spawn the server process
-const server = spawn('node', [join(distPath, 'server', 'entry.mjs')], {
+const server = spawn("node", [join(distPath, "server", "entry.mjs")], {
   env: {
     ...process.env,
     TARGET_PATH: absoluteTargetPath,
-    SSG_EDITOR_CONFIG_PATH: resolvedConfigPath
+    SSG_EDITOR_CONFIG_PATH: resolvedConfigPath,
   },
-  stdio: 'inherit'
+  stdio: "inherit",
 });
 
 // Handle process termination
-process.on('SIGINT', () => {
-  console.log('\nStopping SSG Editor...');
+process.on("SIGINT", () => {
+  console.log("\nStopping SSG Editor...");
   server.kill();
   process.exit();
 });
 
-process.on('SIGTERM', () => {
-  console.log('\nStopping SSG Editor...');
+process.on("SIGTERM", () => {
+  console.log("\nStopping SSG Editor...");
   server.kill();
   process.exit();
-}); 
+});

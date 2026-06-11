@@ -51,7 +51,10 @@ describe("getFiles", () => {
     await fs.mkdir(path.join(rootPath, "posts", "drafts"), {
       recursive: true,
     });
-    await fs.writeFile(path.join(rootPath, "posts", "drafts", "one.md"), "# One");
+    await fs.writeFile(
+      path.join(rootPath, "posts", "drafts", "one.md"),
+      "# One",
+    );
 
     expect(getFiles(rootPath)).toEqual([
       {

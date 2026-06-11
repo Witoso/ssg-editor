@@ -50,7 +50,11 @@ if (Astro.request.method === "POST") {
       return Astro.redirect("/");
     }
 
-    const filePath = path.join(targetPath, ...folderSegments, `${newFilename}.md`);
+    const filePath = path.join(
+      targetPath,
+      ...folderSegments,
+      `${newFilename}.md`,
+    );
 
     if (await fileExists(filePath)) {
       // Store error and filename in cookies
@@ -59,14 +63,18 @@ if (Astro.request.method === "POST") {
       return Astro.redirect("/");
     }
 
-    await fs.mkdir(path.join(targetPath, ...folderSegments), { recursive: true });
+    await fs.mkdir(path.join(targetPath, ...folderSegments), {
+      recursive: true,
+    });
     await fs.writeFile(filePath, "", "utf-8");
 
     // Store success message in cookies
     Astro.cookies.set("flash_success", "file_created");
     Astro.cookies.set("flash_filename", newFilename);
 
-    return Astro.redirect(`/${[...folderSegments, `${newFilename}.md`].join("/")}`);
+    return Astro.redirect(
+      `/${[...folderSegments, `${newFilename}.md`].join("/")}`,
+    );
   } catch (error) {
     if (error instanceof Error) {
       console.error("Error creating file:", error.message);

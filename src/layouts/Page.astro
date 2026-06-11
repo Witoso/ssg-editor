@@ -19,219 +19,224 @@ Astro.cookies.delete("flash_filename");
 ---
 
 <Layout title="SSG Editor">
-	<header
-		class="flex justify-between h-12 items-center border-b-2 border-black bg-background"
-	>
-		<h1 class="truncate px-3 text-xl font-mono font-bold tracking-tight">
-			SSG Editor
-		</h1>
-		<SavingStatus />
-	</header>
+  <header
+    class="flex justify-between h-12 items-center border-b-2 border-black bg-background"
+  >
+    <h1 class="truncate px-3 text-xl font-mono font-bold tracking-tight">
+      SSG Editor
+    </h1>
+    <SavingStatus />
+  </header>
 
-	<Alert client:load error={error} success={success} filename={filename} client:only="react"/>
+  <Alert
+    client:load
+    error={error}
+    success={success}
+    filename={filename}
+    client:only="react"
+  />
 
-	<div class="editor-shell flex">
-		<!-- Side Panel -->
-		<div
-			class="sidebar-panel flex flex-col border-r-2 border-black"
-			id="file-sidebar"
-		>
-			<div class="sidebar-header">
-				<h2 class="sidebar-title text-lg font-mono tracking-tight">
-					Files
-				</h2>
-				<button
-					type="button"
-					class="sidebar-toggle"
-					id="file-sidebar-toggle"
-					aria-controls="file-sidebar"
-					aria-expanded="true"
-					aria-label="Collapse file sidebar"
-					title="Collapse file sidebar"
-				>
-					<img
-						class="sidebar-toggle-icon sidebar-toggle-icon-collapse"
-						src={CollapseSidebarIcon}
-						alt=""
-						aria-hidden="true"
-					/>
-					<img
-						class="sidebar-toggle-icon sidebar-toggle-icon-expand"
-						src={ExpandSidebarIcon}
-						alt=""
-						aria-hidden="true"
-					/>
-				</button>
-			</div>
-			<div class="sidebar-content flex-grow overflow-y-auto">
-				<slot name="file-tree" />
-			</div>
-		</div>
+  <div class="editor-shell flex">
+    <!-- Side Panel -->
+    <div
+      class="sidebar-panel flex flex-col border-r-2 border-black"
+      id="file-sidebar"
+    >
+      <div class="sidebar-header">
+        <h2 class="sidebar-title text-lg font-mono tracking-tight">Files</h2>
+        <button
+          type="button"
+          class="sidebar-toggle"
+          id="file-sidebar-toggle"
+          aria-controls="file-sidebar"
+          aria-expanded="true"
+          aria-label="Collapse file sidebar"
+          title="Collapse file sidebar"
+        >
+          <img
+            class="sidebar-toggle-icon sidebar-toggle-icon-collapse"
+            src={CollapseSidebarIcon}
+            alt=""
+            aria-hidden="true"
+          />
+          <img
+            class="sidebar-toggle-icon sidebar-toggle-icon-expand"
+            src={ExpandSidebarIcon}
+            alt=""
+            aria-hidden="true"
+          />
+        </button>
+      </div>
+      <div class="sidebar-content flex-grow overflow-y-auto">
+        <slot name="file-tree" />
+      </div>
+    </div>
 
-		<!-- Main Editor Area -->
-		<div class="editor-panel flex-grow flex flex-col relative bg-gray-100">
-			<div
-				class="h-full px-4 py-4 lg:px-8 flex flex-col items-center justify-start overflow-y-auto"
-			>
-				<div
-					class="editor-surface bg-white w-full max-w-4xl h-full shadow-md overflow-hidden"
-				>
-					<slot name="editor" />
-				</div>
-			</div>
-		</div>
-	</div>
+    <!-- Main Editor Area -->
+    <div class="editor-panel flex-grow flex flex-col relative bg-gray-100">
+      <div
+        class="h-full px-4 py-4 lg:px-8 flex flex-col items-center justify-start overflow-y-auto"
+      >
+        <div
+          class="editor-surface bg-white w-full max-w-4xl h-full shadow-md overflow-hidden"
+        >
+          <slot name="editor" />
+        </div>
+      </div>
+    </div>
+  </div>
 </Layout>
 
 <style>
-	.tree-with-icons::part(label) {
-		font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
-			"Liberation Mono", "Courier New", monospace;
-	}
+  .tree-with-icons::part(label) {
+    font-family:
+      ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
+      "Courier New", monospace;
+  }
 
-	.editor-shell {
-		height: calc(100vh - 3rem);
-		min-height: 0;
-		overflow: hidden;
-	}
+  .editor-shell {
+    height: calc(100vh - 3rem);
+    min-height: 0;
+    overflow: hidden;
+  }
 
-	.sidebar-panel {
-		width: 18rem;
-		min-width: 18rem;
-		height: 100%;
-		background: var(--color-background);
-		transition:
-			width 180ms ease,
-			min-width 180ms ease;
-	}
+  .sidebar-panel {
+    width: 18rem;
+    min-width: 18rem;
+    height: 100%;
+    background: var(--color-background);
+    transition:
+      width 180ms ease,
+      min-width 180ms ease;
+  }
 
-	.sidebar-panel.is-collapsed {
-		width: 3.5rem;
-		min-width: 3.5rem;
-	}
+  .sidebar-panel.is-collapsed {
+    width: 3.5rem;
+    min-width: 3.5rem;
+  }
 
-	.sidebar-header {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		gap: 0.5rem;
-		min-height: 3.75rem;
-		padding: 1rem 0.75rem;
-	}
+  .sidebar-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    min-height: 3.75rem;
+    padding: 1rem 0.75rem;
+  }
 
-	.sidebar-title {
-		margin: 0;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		white-space: nowrap;
-	}
+  .sidebar-title {
+    margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
 
-	.sidebar-toggle {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		width: 2rem;
-		height: 2rem;
-		flex: 0 0 2rem;
-		border: 0;
-		background: transparent;
-		cursor: pointer;
-	}
+  .sidebar-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    flex: 0 0 2rem;
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+  }
 
-	.sidebar-toggle:hover {
-		background: #f3f4f6;
-	}
+  .sidebar-toggle:hover {
+    background: #f3f4f6;
+  }
 
-	.sidebar-toggle:focus-visible {
-		outline: 2px solid black;
-		outline-offset: 2px;
-	}
+  .sidebar-toggle:focus-visible {
+    outline: 2px solid black;
+    outline-offset: 2px;
+  }
 
-	.sidebar-toggle-icon {
-		width: 1rem;
-		height: 1rem;
-	}
+  .sidebar-toggle-icon {
+    width: 1rem;
+    height: 1rem;
+  }
 
-	.sidebar-toggle-icon-expand {
-		display: none;
-	}
+  .sidebar-toggle-icon-expand {
+    display: none;
+  }
 
-	.sidebar-content {
-		opacity: 1;
-		transition: opacity 120ms ease;
-	}
+  .sidebar-content {
+    opacity: 1;
+    transition: opacity 120ms ease;
+  }
 
-	.sidebar-panel.is-collapsed .sidebar-header {
-		justify-content: center;
-		padding-inline: 0.5rem;
-	}
+  .sidebar-panel.is-collapsed .sidebar-header {
+    justify-content: center;
+    padding-inline: 0.5rem;
+  }
 
-	.sidebar-panel.is-collapsed .sidebar-title,
-	.sidebar-panel.is-collapsed .sidebar-content,
-	.sidebar-panel.is-collapsed .sidebar-toggle-icon-collapse {
-		display: none;
-	}
+  .sidebar-panel.is-collapsed .sidebar-title,
+  .sidebar-panel.is-collapsed .sidebar-content,
+  .sidebar-panel.is-collapsed .sidebar-toggle-icon-collapse {
+    display: none;
+  }
 
-	.sidebar-panel.is-collapsed .sidebar-toggle-icon-expand {
-		display: block;
-	}
+  .sidebar-panel.is-collapsed .sidebar-toggle-icon-expand {
+    display: block;
+  }
 
-	.editor-panel {
-		min-width: 0;
-		height: 100%;
-	}
+  .editor-panel {
+    min-width: 0;
+    height: 100%;
+  }
 
-	.editor-surface {
-		min-height: 24rem;
-	}
+  .editor-surface {
+    min-height: 24rem;
+  }
 
-	@media (max-width: 640px) {
-		.editor-shell {
-			position: relative;
-		}
+  @media (max-width: 640px) {
+    .editor-shell {
+      position: relative;
+    }
 
-		.sidebar-panel:not(.is-collapsed) {
-			position: absolute;
-			inset: 0 auto 0 0;
-			z-index: 1000;
-			width: min(18rem, calc(100vw - 3.5rem));
-			min-width: min(18rem, calc(100vw - 3.5rem));
-			background: white;
-			box-shadow: 4px 0 0 rgb(0 0 0 / 0.16);
-		}
+    .sidebar-panel:not(.is-collapsed) {
+      position: absolute;
+      inset: 0 auto 0 0;
+      z-index: 1000;
+      width: min(18rem, calc(100vw - 3.5rem));
+      min-width: min(18rem, calc(100vw - 3.5rem));
+      background: white;
+      box-shadow: 4px 0 0 rgb(0 0 0 / 0.16);
+    }
 
-		.sidebar-panel.is-collapsed {
-			position: relative;
-		}
+    .sidebar-panel.is-collapsed {
+      position: relative;
+    }
 
-		.editor-panel {
-			width: 100%;
-		}
-	}
+    .editor-panel {
+      width: 100%;
+    }
+  }
 </style>
 
 <script>
-	const sidebar = document.getElementById("file-sidebar");
-	const toggle = document.getElementById("file-sidebar-toggle");
+  const sidebar = document.getElementById("file-sidebar");
+  const toggle = document.getElementById("file-sidebar-toggle");
 
-	const setSidebarCollapsed = (isCollapsed: boolean) => {
-		sidebar?.classList.toggle("is-collapsed", isCollapsed);
-		toggle?.setAttribute("aria-expanded", String(!isCollapsed));
-		toggle?.setAttribute(
-			"aria-label",
-			isCollapsed ? "Expand file sidebar" : "Collapse file sidebar",
-		);
-		toggle?.setAttribute(
-			"title",
-			isCollapsed ? "Expand file sidebar" : "Collapse file sidebar",
-		);
-	};
+  const setSidebarCollapsed = (isCollapsed: boolean) => {
+    sidebar?.classList.toggle("is-collapsed", isCollapsed);
+    toggle?.setAttribute("aria-expanded", String(!isCollapsed));
+    toggle?.setAttribute(
+      "aria-label",
+      isCollapsed ? "Expand file sidebar" : "Collapse file sidebar",
+    );
+    toggle?.setAttribute(
+      "title",
+      isCollapsed ? "Expand file sidebar" : "Collapse file sidebar",
+    );
+  };
 
-	if (window.matchMedia("(max-width: 640px)").matches) {
-		setSidebarCollapsed(true);
-	}
+  if (window.matchMedia("(max-width: 640px)").matches) {
+    setSidebarCollapsed(true);
+  }
 
-	toggle?.addEventListener("click", () => {
-		setSidebarCollapsed(!sidebar?.classList.contains("is-collapsed"));
-	});
+  toggle?.addEventListener("click", () => {
+    setSidebarCollapsed(!sidebar?.classList.contains("is-collapsed"));
+  });
 </script>

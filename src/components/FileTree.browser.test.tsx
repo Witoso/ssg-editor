@@ -31,7 +31,9 @@ const items: FileItem[] = [
 ];
 
 test("renders enabled files, folders, and create entries", async () => {
-  const screen = await render(<FileTree items={items} activePath="/index.md" />);
+  const screen = await render(
+    <FileTree items={items} activePath="/index.md" />,
+  );
 
   await expect.element(screen.getByText("notes")).toBeVisible();
   await expect.element(screen.getByText("first.md")).toBeVisible();
@@ -39,9 +41,9 @@ test("renders enabled files, folders, and create entries", async () => {
   expect(document.body.textContent).not.toContain("draft.md");
 
   expect(document.querySelectorAll("sl-tree-item[selected]").length).toBe(1);
-  expect(document.querySelector("sl-tree-item[selected]")?.textContent).toContain(
-    "index.md",
-  );
+  expect(
+    document.querySelector("sl-tree-item[selected]")?.textContent,
+  ).toContain("index.md");
   expect(screen.getByText("Create a file").elements()).toHaveLength(2);
 });
 

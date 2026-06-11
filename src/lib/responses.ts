@@ -13,7 +13,8 @@ export function imageResponse(imagePath: string): Response | null {
 
   return new Response(image, {
     headers: {
-      "Content-Type": getImageContentType(imagePath) ?? "application/octet-stream",
+      "Content-Type":
+        getImageContentType(imagePath) ?? "application/octet-stream",
     },
   });
 }

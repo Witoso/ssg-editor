@@ -24,20 +24,25 @@ export function Alert({ error, success, filename }: AlertProps) {
 
   const getMessage = () => {
     switch (error) {
-      case 'file_exists':
+      case "file_exists":
         return `File "${filename}" already exists.`;
-      case 'invalid_input':
-        return 'Invalid input provided.';
-      case 'server_error':
-        return 'Server error occurred.';
+      case "invalid_input":
+        return "Invalid input provided.";
+      case "server_error":
+        return "Server error occurred.";
       default:
-        return 'File created successfully.';
+        return "File created successfully.";
     }
   };
 
   return (
     <>
-      <SlAlert ref={alert} variant={error ? 'danger' : 'success'} duration={4000} closable>
+      <SlAlert
+        ref={alert}
+        variant={error ? "danger" : "success"}
+        duration={4000}
+        closable
+      >
         <SlIcon slot="icon" src={error ? AlertIcon : CheckIcon} />
         <strong>{getMessage()}</strong>
       </SlAlert>

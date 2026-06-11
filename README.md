@@ -70,6 +70,7 @@ directory and launches Astro against that copy, using the fixture `.sserc.js`
 config. This keeps editor autosaves out of Vite's watched project files.
 
 ## To do
+
 - [ ] More CKEditor 5 plugins (dynamic config?)
 - [ ] Tree view of files.
 - [ ] Image upload and storage.
