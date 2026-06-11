@@ -16,7 +16,9 @@
     "preview": "astro preview",
     "astro": "astro",
     "prepare": "pnpm run build",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "author": "Witek Socha",
   "license": "GPL-3.0-or-later",

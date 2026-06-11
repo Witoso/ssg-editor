@@ -1,0 +1,6 @@
+dist/
+.astro/
+demo/
+pnpm-lock.yaml
+**/__screenshots__/
+.vitest-attachments/
