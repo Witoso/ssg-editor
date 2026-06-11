@@ -7,6 +7,8 @@ import type SlAlertElement from "@shoelace-style/shoelace/dist/components/alert/
 import AlertIcon from "pixelarticons/svg/square-alert.svg?url";
 import CheckIcon from "pixelarticons/svg/check.svg?url";
 
+import { getFlashMessage } from "./flashMessage";
+
 interface AlertProps {
   error?: string;
   success?: string;
@@ -22,18 +24,11 @@ export function Alert({ error, success, filename }: AlertProps) {
     }
   }, [error, success]);
 
-  const getMessage = () => {
-    switch (error) {
-      case "file_exists":
-        return `File "${filename}" already exists.`;
-      case "invalid_input":
-        return "Invalid input provided.";
-      case "server_error":
-        return "Server error occurred.";
-      default:
-        return "File created successfully.";
-    }
-  };
+  const message = getFlashMessage({ error, success, filename });
+
+  if (!message) {
+    return null;
+  }
 
   return (
     <>
@@ -44,7 +39,7 @@ export function Alert({ error, success, filename }: AlertProps) {
         closable
       >
         <SlIcon slot="icon" src={error ? AlertIcon : CheckIcon} />
-        <strong>{getMessage()}</strong>
+        <strong>{message}</strong>
       </SlAlert>
     </>
   );
