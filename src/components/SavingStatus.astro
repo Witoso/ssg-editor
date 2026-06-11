@@ -1,5 +1,6 @@
 ---
 import CheckIcon from "pixelarticons/svg/check.svg?url";
+import AlertIcon from "pixelarticons/svg/square-alert.svg?url";
 ---
 
 <div
@@ -8,7 +9,11 @@ import CheckIcon from "pixelarticons/svg/check.svg?url";
 >
   <!-- Using <img> to show the SVG icon -->
   <div class="save-icon hidden">
-    <img src={CheckIcon} alt="Save Icon" class="w-6 h-6" />
+    <img src={CheckIcon} alt="Saved" class="w-6 h-6" />
+  </div>
+
+  <div class="save-error hidden">
+    <img src={AlertIcon} alt="Save failed" class="w-6 h-6" />
   </div>
 
   <div class="save-spinner hidden flex gap-1 items-center justify-center">
@@ -36,20 +41,16 @@ import CheckIcon from "pixelarticons/svg/check.svg?url";
 </div>
 
 <script>
-  import { isSaving } from "./savingStore.js";
+  import { saveStatus } from "./savingStore.js";
 
-  // Subscribe to the isSaving atom changes
-  isSaving.subscribe((saving) => {
+  saveStatus.subscribe((status) => {
     const saveStatusContainer = document.getElementById("save-status");
     const saveIcon = saveStatusContainer?.querySelector(".save-icon");
+    const saveError = saveStatusContainer?.querySelector(".save-error");
     const saveSpinner = saveStatusContainer?.querySelector(".save-spinner");
 
-    if (saving) {
-      saveSpinner?.classList.remove("hidden");
-      saveIcon?.classList.add("hidden");
-    } else {
-      saveSpinner?.classList.add("hidden");
-      saveIcon?.classList.remove("hidden");
-    }
+    saveIcon?.classList.toggle("hidden", status !== "idle");
+    saveSpinner?.classList.toggle("hidden", status !== "saving");
+    saveError?.classList.toggle("hidden", status !== "error");
   });
 </script>

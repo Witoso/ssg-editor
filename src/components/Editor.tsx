@@ -1,6 +1,7 @@
 import { useRef } from "react";
 
-import { isSaving } from "./savingStore.js";
+import { saveStatus } from "./savingStore.js";
+import { saveFile } from "./editorSave.js";
 
 import { CKEditor } from "@ckeditor/ckeditor5-react";
 import {
@@ -66,24 +67,11 @@ export function Editor({ content, readOnly, filePath }: EditorProps) {
   };
 
   const saveData = (editor: DecoupledEditor) => {
-    const content = editor.getDataWithFrontmatter();
-    const pendingActions = editor.plugins.get("PendingActions");
+    if (!filePath) {
+      return Promise.resolve();
+    }
 
-    pendingActions.on("change:hasAny", (_evt, _propertyName, newValue) => {
-      if (newValue) {
-        isSaving.set(true);
-      } else {
-        isSaving.set(false);
-      }
-    });
-
-    return fetch("/save", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ fileContent: content, filePath: filePath }),
-    });
+    return saveFile(filePath, editor.getDataWithFrontmatter());
   };
 
   return (
@@ -221,6 +209,15 @@ export function Editor({ content, readOnly, filePath }: EditorProps) {
             }}
             onReady={(editor) => {
               editorRef.current = editor as DecoupledEditor;
+
+              const pendingActions = editor.plugins.get("PendingActions");
+              pendingActions.on(
+                "change:hasAny",
+                (_evt, _propertyName, hasAny) => {
+                  saveStatus.set(hasAny ? "saving" : "idle");
+                },
+              );
+
               editor.setDataWithFrontmatter(content!);
               const toolbar = editor.ui?.view?.toolbar;
               if (editorToolbarRef?.current && toolbar?.element) {
