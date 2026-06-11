@@ -9,10 +9,29 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const args = process.argv.slice(2);
+const portFlagIndex = args.indexOf("--port");
+let port = process.env.PORT ?? "4321";
+
+if (portFlagIndex !== -1) {
+  const portValue = args[portFlagIndex + 1];
+
+  if (!portValue || !/^\d+$/.test(portValue)) {
+    console.error(
+      "Please provide a valid port number: ssge <path_to_folder> --port <port>",
+    );
+    process.exit(1);
+  }
+
+  port = portValue;
+  args.splice(portFlagIndex, 2);
+}
+
 const targetPath = args[0];
 
 if (!targetPath) {
-  console.error("Please provide a path to the folder: ssge <path_to_folder>");
+  console.error(
+    "Please provide a path to the folder: ssge <path_to_folder> [--port <port>]",
+  );
   process.exit(1);
 }
 
@@ -37,12 +56,14 @@ console.log(`Starting SSG Editor for folder: ${absoluteTargetPath}`);
 if (resolvedConfigPath) {
   console.log(`Using config: ${resolvedConfigPath}`);
 }
+console.log(`SSG Editor is running at http://localhost:${port}`);
 console.log("Press Ctrl+C to stop the server");
 
 // Spawn the server process
 const server = spawn("node", [join(distPath, "server", "entry.mjs")], {
   env: {
     ...process.env,
+    PORT: port,
     TARGET_PATH: absoluteTargetPath,
     SSG_EDITOR_CONFIG_PATH: resolvedConfigPath,
   },

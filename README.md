@@ -34,10 +34,16 @@ ssge path/to/folder/with/files/to/write
 Everything runs locally. When you run the command, you should see the local server starting.
 
 ```sh
-⚡️[SSG EDITOR]: Server is running at http://localhost:8989
+SSG Editor is running at http://localhost:4321
 ```
 
 Navigate to this page in the browser. Create new files or edit the current markdown ones in this folder.
+
+The default port is `4321`; override it with `--port` (or the `PORT` environment variable):
+
+```sh
+ssge path/to/folder --port 8989
+```
 
 ## Configuration
 
