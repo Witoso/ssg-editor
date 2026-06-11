@@ -38,7 +38,7 @@ export function Editor({ content, filePath }: EditorProps) {
                 save(editor) {
                   return saveFile(
                     filePath,
-                    (editor as DecoupledEditor).getDataWithFrontmatter(),
+                    (editor as DecoupledEditor).getData(),
                   );
                 },
               },
@@ -54,7 +54,7 @@ export function Editor({ content, filePath }: EditorProps) {
                 },
               );
 
-              editor.setDataWithFrontmatter(content);
+              editor.setData(content);
               const toolbar = editor.ui?.view?.toolbar;
               if (editorToolbarRef?.current && toolbar?.element) {
                 editorToolbarRef.current.appendChild(toolbar.element);

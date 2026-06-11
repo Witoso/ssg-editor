@@ -21,8 +21,8 @@ importers:
         specifier: ^1.1.0
         version: 1.1.0(nanostores@1.3.0)(react@19.2.7)
       '@witoso/ckeditor5-frontmatter':
-        specifier: ^0.3.0
-        version: 0.3.0(ckeditor5@48.2.0)
+        specifier: ^1.0.0
+        version: 1.0.0(@ckeditor/ckeditor5-core@48.2.0)(ckeditor5@48.2.0)
       astro:
         specifier: ^6.4.4
         version: 6.4.4(@types/node@25.9.2)(jiti@2.7.0)(lightningcss@1.32.0)(rollup@4.61.1)(yaml@2.9.0)
@@ -1405,11 +1405,12 @@ packages:
   '@vscode/l10n@0.0.18':
     resolution: {integrity: sha512-KYSIHVmslkaCDyw013pphY+d7x1qV8IZupYfeIfzNA+nsaWHbn5uPuQRvdRFsa9zFzGeudPuoGoZ1Op4jrJXIQ==}
 
-  '@witoso/ckeditor5-frontmatter@0.3.0':
-    resolution: {integrity: sha512-qSfuY1oEPCTLkFjsxkjTJ1pmBxr6D+vCPIhhUD37KiG0vFbE1RlSmyDitckzlqDh7GwnTbkPjeOlBmJmn0rxJg==}
-    engines: {node: '>=18.0.0', npm: '>=5.7.1'}
+  '@witoso/ckeditor5-frontmatter@1.0.0':
+    resolution: {integrity: sha512-sZiTB0QMD9MkxX3JrVHmSmqfp0uhC1onDQjcRYurtBaKdlc41v1AWvwHIIwYf2RsnAn5a2JQYYwLGsLkOUnd/Q==}
+    engines: {node: '>=24.11.0', pnpm: '>=11.0.0'}
     peerDependencies:
-      ckeditor5: '>=42.0.0 || ^0.0.0-nightly'
+      '@ckeditor/ckeditor5-core': ^48.0.0
+      ckeditor5: ^48.0.0
 
   acorn-jsx@5.3.2:
     resolution: {integrity: sha512-rq9s+JNhf0IChjtDXxllJ7g41oZk5SlXtp0LHwyA5cejwn7vKmKp4pPri6YEePv2PU65sAsegbXtIinmDFDXgQ==}
@@ -5397,8 +5398,9 @@ snapshots:
 
   '@vscode/l10n@0.0.18': {}
 
-  '@witoso/ckeditor5-frontmatter@0.3.0(ckeditor5@48.2.0)':
+  '@witoso/ckeditor5-frontmatter@1.0.0(@ckeditor/ckeditor5-core@48.2.0)(ckeditor5@48.2.0)':
     dependencies:
+      '@ckeditor/ckeditor5-core': 48.2.0
       ckeditor5: 48.2.0
 
   acorn-jsx@5.3.2(acorn@8.16.0):
