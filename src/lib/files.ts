@@ -1,10 +1,13 @@
-import fs from "fs";
+import fs from "fs/promises";
 import path from "path";
 import type { FileItem } from "@/components/FileTree";
 
-function getFileItem(fullPath: string, rootPath: string): FileItem | null {
+async function getFileItem(
+  fullPath: string,
+  rootPath: string,
+): Promise<FileItem | null> {
   // lstat so symlinks are skipped instead of followed out of the root.
-  const stats = fs.lstatSync(fullPath);
+  const stats = await fs.lstat(fullPath);
   const relativePath = path.relative(rootPath, fullPath);
   const name = path.basename(fullPath);
 
@@ -13,7 +16,7 @@ function getFileItem(fullPath: string, rootPath: string): FileItem | null {
   }
 
   if (stats.isDirectory()) {
-    const children = getFilesInDirectory(fullPath, rootPath);
+    const children = await getFilesInDirectory(fullPath, rootPath);
     if (children.length > 0) {
       return {
         name,
@@ -35,22 +38,33 @@ function getFileItem(fullPath: string, rootPath: string): FileItem | null {
   }
 }
 
-function getFilesInDirectory(
+async function getFilesInDirectory(
   directoryPath: string,
   rootPath: string,
-): FileItem[] {
-  const entries = fs.readdirSync(directoryPath);
+): Promise<FileItem[]> {
+  const entries = await fs.readdir(directoryPath);
 
-  return entries
-    .map((entry) => {
-      const fullPath = path.join(directoryPath, entry);
-      return getFileItem(fullPath, rootPath);
-    })
-    .filter((item): item is FileItem => item !== null);
+  const items = await Promise.all(
+    entries.map((entry) =>
+      getFileItem(path.join(directoryPath, entry), rootPath),
+    ),
+  );
+
+  return items
+    .filter((item): item is FileItem => item !== null)
+    .sort((a, b) => {
+      if (a.type !== b.type) {
+        return a.type === "folder" ? -1 : 1;
+      }
+
+      return a.name.localeCompare(b.name);
+    });
 }
 
-export function getFiles(rootPath: string): FileItem[] {
-  if (!fs.existsSync(rootPath)) {
+export async function getFiles(rootPath: string): Promise<FileItem[]> {
+  try {
+    await fs.access(rootPath);
+  } catch {
     throw new Error(`Path does not exist: ${rootPath}`);
   }
 

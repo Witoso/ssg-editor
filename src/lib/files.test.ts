@@ -16,8 +16,8 @@ describe("getFiles", () => {
     await fs.rm(rootPath, { recursive: true, force: true });
   });
 
-  test("throws when the root path does not exist", () => {
-    expect(() => getFiles(path.join(rootPath, "missing"))).toThrow(
+  test("throws when the root path does not exist", async () => {
+    await expect(getFiles(path.join(rootPath, "missing"))).rejects.toThrow(
       `Path does not exist: ${path.join(rootPath, "missing")}`,
     );
   });
@@ -25,7 +25,7 @@ describe("getFiles", () => {
   test("includes markdown files at the root", async () => {
     await fs.writeFile(path.join(rootPath, "index.md"), "# Home");
 
-    expect(getFiles(rootPath)).toEqual([
+    await expect(getFiles(rootPath)).resolves.toEqual([
       {
         name: "index.md",
         path: "/index.md",
@@ -38,7 +38,7 @@ describe("getFiles", () => {
     await fs.writeFile(path.join(rootPath, "index.md"), "# Home");
     await fs.writeFile(path.join(rootPath, "notes.txt"), "Notes");
 
-    expect(getFiles(rootPath)).toEqual([
+    await expect(getFiles(rootPath)).resolves.toEqual([
       {
         name: "index.md",
         path: "/index.md",
@@ -56,7 +56,7 @@ describe("getFiles", () => {
       "# One",
     );
 
-    expect(getFiles(rootPath)).toEqual([
+    await expect(getFiles(rootPath)).resolves.toEqual([
       {
         name: "posts",
         path: "/posts",
@@ -82,7 +82,25 @@ describe("getFiles", () => {
   test("excludes empty folders", async () => {
     await fs.mkdir(path.join(rootPath, "empty"));
 
-    expect(getFiles(rootPath)).toEqual([]);
+    await expect(getFiles(rootPath)).resolves.toEqual([]);
+  });
+
+  test("sorts folders before files, each alphabetically", async () => {
+    await fs.writeFile(path.join(rootPath, "zebra.md"), "# Z");
+    await fs.writeFile(path.join(rootPath, "alpha.md"), "# A");
+    await fs.mkdir(path.join(rootPath, "second"));
+    await fs.writeFile(path.join(rootPath, "second", "post.md"), "# Post");
+    await fs.mkdir(path.join(rootPath, "first"));
+    await fs.writeFile(path.join(rootPath, "first", "post.md"), "# Post");
+
+    const files = await getFiles(rootPath);
+
+    expect(files.map((item) => item.name)).toEqual([
+      "first",
+      "second",
+      "alpha.md",
+      "zebra.md",
+    ]);
   });
 
   test("does not follow symlinks", async () => {
@@ -98,7 +116,7 @@ describe("getFiles", () => {
         path.join(rootPath, "linked.md"),
       );
 
-      expect(getFiles(rootPath)).toEqual([]);
+      await expect(getFiles(rootPath)).resolves.toEqual([]);
     } finally {
       await fs.rm(outsidePath, { recursive: true, force: true });
     }

@@ -2,16 +2,15 @@ import fs from "fs/promises";
 import path from "path";
 import type { APIRoute } from "astro";
 
-import { loadConfig } from "@/lib/config";
 import {
   getPublicImageUrl,
   getSafeImageName,
   resolveImageUploadPath,
   sniffImageContentType,
 } from "@/lib/images";
-import { getTargetPath } from "@/lib/paths";
+import { jsonResponse } from "@/lib/responses";
 
-export const POST: APIRoute = async ({ request }) => {
+export const POST: APIRoute = async ({ request, locals }) => {
   try {
     const data = await request.formData();
     const upload = data.get("upload");
@@ -30,8 +29,7 @@ export const POST: APIRoute = async ({ request }) => {
       return uploadError("Unsupported image type.", 400);
     }
 
-    const targetPath = getTargetPath();
-    const config = await loadConfig();
+    const { targetPath, config } = locals;
     const uploadPath = resolveImageUploadPath({
       targetPath,
       uploadDir: config.images.uploadDir,
@@ -45,16 +43,9 @@ export const POST: APIRoute = async ({ request }) => {
     await fs.mkdir(path.dirname(uploadPath), { recursive: true });
     await fs.writeFile(uploadPath, bytes);
 
-    return new Response(
-      JSON.stringify({
-        url: getPublicImageUrl(config.images.publicPath, filename),
-      }),
-      {
-        status: 201,
-        headers: {
-          "Content-Type": "application/json",
-        },
-      },
+    return jsonResponse(
+      { url: getPublicImageUrl(config.images.publicPath, filename) },
+      201,
     );
   } catch (error) {
     console.error("Error uploading image:", error);
@@ -62,18 +53,7 @@ export const POST: APIRoute = async ({ request }) => {
   }
 };
 
+// CKEditor's SimpleUploadAdapter expects errors as { error: { message } }.
 function uploadError(message: string, status: number): Response {
-  return new Response(
-    JSON.stringify({
-      error: {
-        message,
-      },
-    }),
-    {
-      status,
-      headers: {
-        "Content-Type": "application/json",
-      },
-    },
-  );
+  return jsonResponse({ error: { message } }, status);
 }

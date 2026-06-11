@@ -1,39 +1,17 @@
 ---
-import fs from "fs";
+import fs from "fs/promises";
 import Page from "../layouts/Page.astro";
 
 import { Editor } from "@/components/Editor";
 import { FileTree } from "@/components/FileTree";
-import { loadConfig } from "@/lib/config";
 import { getFiles } from "@/lib/files";
-import { resolvePublicImagePath } from "@/lib/images";
-import { getTargetPath, resolveMarkdownFilePath } from "@/lib/paths";
-import { imageResponse } from "@/lib/responses";
+import { resolveMarkdownFilePath } from "@/lib/paths";
 
 const { slug } = Astro.params;
+const filePath = slug ?? "";
 
-let filePath: string;
-if (!slug) {
-  filePath = "";
-} else {
-  filePath = slug;
-}
-
-const targetPath = getTargetPath();
-const config = await loadConfig();
-const imagePath = resolvePublicImagePath({
-  targetPath,
-  uploadDir: config.images.uploadDir,
-  publicPath: config.images.publicPath,
-  requestPath: filePath,
-});
-const uploadedImageResponse = imagePath ? imageResponse(imagePath) : null;
-
-if (uploadedImageResponse) {
-  return uploadedImageResponse;
-}
-
-const files = getFiles(targetPath);
+const { targetPath } = Astro.locals;
+const files = await getFiles(targetPath);
 
 const fullPath = resolveMarkdownFilePath(targetPath, filePath);
 
@@ -41,14 +19,15 @@ let content = "*Select or create a file to edit.*";
 let readOnly = true;
 
 if (filePath != "") {
-  if (fullPath && fs.existsSync(fullPath)) {
-    content = fs.readFileSync(fullPath, "utf-8");
+  if (!fullPath) {
+    return new Response(null, { status: 404, statusText: "Not found" });
+  }
+
+  try {
+    content = await fs.readFile(fullPath, "utf-8");
     readOnly = false;
-  } else {
-    return new Response(null, {
-      status: 404,
-      statusText: "Not found",
-    });
+  } catch {
+    return new Response(null, { status: 404, statusText: "Not found" });
   }
 }
 ---
