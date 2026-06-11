@@ -17,24 +17,45 @@ const imageContentTypes = new Map(
   ]),
 );
 
-export function getImageExtension(file: File): string | null {
-  if (allowedImageTypes.has(file.type)) {
-    return allowedImageTypes.get(file.type)!;
+const imageMagicBytes = new Map<string, number[]>([
+  ["image/gif", [0x47, 0x49, 0x46, 0x38]],
+  ["image/jpeg", [0xff, 0xd8, 0xff]],
+  ["image/png", [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]],
+  ["image/webp", [0x52, 0x49, 0x46, 0x46]],
+]);
+
+export function sniffImageContentType(bytes: Uint8Array): string | null {
+  for (const [contentType, magic] of imageMagicBytes) {
+    if (!magic.every((byte, index) => bytes[index] === byte)) {
+      continue;
+    }
+
+    // WebP is a RIFF container; the format tag sits after the chunk size.
+    if (contentType === "image/webp") {
+      const tag = String.fromCharCode(...bytes.slice(8, 12));
+      if (tag !== "WEBP") {
+        continue;
+      }
+    }
+
+    return contentType;
   }
 
-  const extension = path.extname(file.name).toLowerCase();
-  return [...allowedImageTypes.values()].includes(extension) ? extension : null;
+  return null;
 }
 
-export function getSafeImageName(file: File): string | null {
-  const extension = getImageExtension(file);
+export function getSafeImageName(
+  filename: string,
+  contentType: string,
+): string | null {
+  const extension = allowedImageTypes.get(contentType);
 
   if (!extension) {
     return null;
   }
 
   const basename = path
-    .basename(file.name, path.extname(file.name))
+    .basename(filename, path.extname(filename))
     .toLowerCase()
     .replace(/[^a-z0-9_-]+/g, "-")
     .replace(/^-+|-+$/g, "");

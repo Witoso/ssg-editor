@@ -7,23 +7,57 @@ import {
   getSafeImageName,
   resolveImageUploadPath,
   resolvePublicImagePath,
+  sniffImageContentType,
 } from "./images";
 
-describe("images", () => {
-  test("creates a safe image filename", () => {
-    vi.spyOn(Date, "now").mockReturnValue(123);
+const PNG_MAGIC = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
 
+describe("sniffImageContentType", () => {
+  test("detects the allowed image formats from magic bytes", () => {
+    expect(sniffImageContentType(new Uint8Array(PNG_MAGIC))).toBe("image/png");
     expect(
-      getSafeImageName(
-        new File(["x"], "My Image 01.PNG", { type: "image/png" }),
+      sniffImageContentType(new Uint8Array([0xff, 0xd8, 0xff, 0xe0])),
+    ).toBe("image/jpeg");
+    expect(
+      sniffImageContentType(
+        new Uint8Array([0x47, 0x49, 0x46, 0x38, 0x39, 0x61]),
       ),
-    ).toBe("123-my-image-01.png");
+    ).toBe("image/gif");
+    expect(
+      sniffImageContentType(
+        new Uint8Array([
+          0x52, 0x49, 0x46, 0x46, 0x00, 0x00, 0x00, 0x00, 0x57, 0x45, 0x42,
+          0x50,
+        ]),
+      ),
+    ).toBe("image/webp");
   });
 
-  test("rejects non-image files", () => {
+  test("rejects bytes that are not an allowed image format", () => {
     expect(
-      getSafeImageName(new File(["x"], "document.txt", { type: "text/plain" })),
+      sniffImageContentType(new TextEncoder().encode("not an image")),
     ).toBeNull();
+    expect(sniffImageContentType(new Uint8Array([]))).toBeNull();
+  });
+});
+
+describe("images", () => {
+  test("creates a safe image filename from the detected content type", () => {
+    vi.spyOn(Date, "now").mockReturnValue(123);
+
+    expect(getSafeImageName("My Image 01.PNG", "image/png")).toBe(
+      "123-my-image-01.png",
+    );
+  });
+
+  test("derives the extension from the content type, not the filename", () => {
+    vi.spyOn(Date, "now").mockReturnValue(123);
+
+    expect(getSafeImageName("photo.gif", "image/jpeg")).toBe("123-photo.jpg");
+  });
+
+  test("rejects unsupported content types", () => {
+    expect(getSafeImageName("document.txt", "text/plain")).toBeNull();
   });
 
   test("resolves upload path inside the target path", () => {

@@ -7,6 +7,7 @@ import {
   getPublicImageUrl,
   getSafeImageName,
   resolveImageUploadPath,
+  sniffImageContentType,
 } from "@/lib/images";
 import { getTargetPath } from "@/lib/paths";
 
@@ -19,7 +20,11 @@ export const POST: APIRoute = async ({ request }) => {
       return uploadError("Image file is required.", 400);
     }
 
-    const filename = getSafeImageName(upload);
+    const bytes = new Uint8Array(await upload.arrayBuffer());
+    const contentType = sniffImageContentType(bytes);
+    const filename = contentType
+      ? getSafeImageName(upload.name, contentType)
+      : null;
 
     if (!filename) {
       return uploadError("Unsupported image type.", 400);
@@ -38,7 +43,7 @@ export const POST: APIRoute = async ({ request }) => {
     }
 
     await fs.mkdir(path.dirname(uploadPath), { recursive: true });
-    await fs.writeFile(uploadPath, Buffer.from(await upload.arrayBuffer()));
+    await fs.writeFile(uploadPath, bytes);
 
     return new Response(
       JSON.stringify({
