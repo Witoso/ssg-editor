@@ -61,6 +61,41 @@ describe("config", () => {
     await expect(loadConfig(configPath)).resolves.toEqual(defaultConfig);
   });
 
+  test("reuses the cached config while the file is unchanged", async () => {
+    const configPath = path.join(tempPath, ".sserc.js");
+    await fs.writeFile(
+      configPath,
+      "export default { images: { uploadDir: 'a', publicPath: '/a' } };",
+    );
+
+    const first = await loadConfig(configPath);
+    const second = await loadConfig(configPath);
+
+    expect(second).toBe(first);
+  });
+
+  test("reloads the config when the file changes", async () => {
+    const configPath = path.join(tempPath, ".sserc.js");
+    await fs.writeFile(
+      configPath,
+      "export default { images: { uploadDir: 'a', publicPath: '/a' } };",
+    );
+
+    const first = await loadConfig(configPath);
+
+    await fs.writeFile(
+      configPath,
+      "export default { images: { uploadDir: 'b', publicPath: '/b' } };",
+    );
+    const changedTime = new Date(Date.now() + 5000);
+    await fs.utimes(configPath, changedTime, changedTime);
+
+    const second = await loadConfig(configPath);
+
+    expect(first.images.uploadDir).toBe("a");
+    expect(second.images.uploadDir).toBe("b");
+  });
+
   test("loads ESM config files", async () => {
     const configPath = path.join(tempPath, ".sserc.js");
     await fs.writeFile(

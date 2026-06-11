@@ -28,6 +28,11 @@ export function findConfigPath(cwd: string = process.cwd()): string | null {
   return fs.existsSync(configPath) ? configPath : null;
 }
 
+const configCache = new Map<
+  string,
+  { mtimeMs: number; config: SsgEditorConfig }
+>();
+
 export async function loadConfig(
   configPath: string | null = process.env.SSG_EDITOR_CONFIG_PATH ??
     findConfigPath(),
@@ -37,14 +42,20 @@ export async function loadConfig(
   }
 
   try {
+    const mtimeMs = fs.statSync(configPath).mtimeMs;
+    const cached = configCache.get(configPath);
+
+    if (cached && cached.mtimeMs === mtimeMs) {
+      return cached.config;
+    }
+
     const configUrl = pathToFileURL(configPath);
-    configUrl.searchParams.set(
-      "mtime",
-      String(fs.statSync(configPath).mtimeMs),
-    );
+    configUrl.searchParams.set("mtime", String(mtimeMs));
 
     const module = await import(/* @vite-ignore */ configUrl.href);
-    return normalizeConfig(module.default ?? module);
+    const config = normalizeConfig(module.default ?? module);
+    configCache.set(configPath, { mtimeMs, config });
+    return config;
   } catch (error) {
     console.error(
       `Failed to load config "${configPath}", using defaults:`,
