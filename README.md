@@ -45,6 +45,9 @@ The default port is `4321`; override it with `--port` (or the `PORT` environment
 ssge path/to/folder --port 8989
 ```
 
+The server only listens on `localhost`. If you need to reach it from another
+device, opt in explicitly with `--host` (e.g. `--host 0.0.0.0`).
+
 ## Configuration
 
 SSG Editor reads optional configuration from `.sserc.js` in the edited folder,

@@ -26,11 +26,29 @@ if (portFlagIndex !== -1) {
   args.splice(portFlagIndex, 2);
 }
 
+// Only listen beyond the loopback interface when explicitly requested.
+const hostFlagIndex = args.indexOf("--host");
+let host = process.env.HOST ?? "localhost";
+
+if (hostFlagIndex !== -1) {
+  const hostValue = args[hostFlagIndex + 1];
+
+  if (!hostValue || hostValue.startsWith("-")) {
+    console.error(
+      "Please provide a host to listen on: ssge <path_to_folder> --host <address>",
+    );
+    process.exit(1);
+  }
+
+  host = hostValue;
+  args.splice(hostFlagIndex, 2);
+}
+
 const targetPath = args[0];
 
 if (!targetPath) {
   console.error(
-    "Please provide a path to the folder: ssge <path_to_folder> [--port <port>]",
+    "Please provide a path to the folder: ssge <path_to_folder> [--port <port>] [--host <address>]",
   );
   process.exit(1);
 }
@@ -56,13 +74,14 @@ console.log(`Starting SSG Editor for folder: ${absoluteTargetPath}`);
 if (resolvedConfigPath) {
   console.log(`Using config: ${resolvedConfigPath}`);
 }
-console.log(`SSG Editor is running at http://localhost:${port}`);
+console.log(`SSG Editor is running at http://${host}:${port}`);
 console.log("Press Ctrl+C to stop the server");
 
 // Spawn the server process
 const server = spawn("node", [join(distPath, "server", "entry.mjs")], {
   env: {
     ...process.env,
+    HOST: host,
     PORT: port,
     TARGET_PATH: absoluteTargetPath,
     SSG_EDITOR_CONFIG_PATH: resolvedConfigPath,
