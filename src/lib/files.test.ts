@@ -84,4 +84,23 @@ describe("getFiles", () => {
 
     expect(getFiles(rootPath)).toEqual([]);
   });
+
+  test("does not follow symlinks", async () => {
+    const outsidePath = await fs.mkdtemp(
+      path.join(os.tmpdir(), "ssge-outside-"),
+    );
+
+    try {
+      await fs.writeFile(path.join(outsidePath, "secret.md"), "# Secret");
+      await fs.symlink(outsidePath, path.join(rootPath, "linked-folder"));
+      await fs.symlink(
+        path.join(outsidePath, "secret.md"),
+        path.join(rootPath, "linked.md"),
+      );
+
+      expect(getFiles(rootPath)).toEqual([]);
+    } finally {
+      await fs.rm(outsidePath, { recursive: true, force: true });
+    }
+  });
 });

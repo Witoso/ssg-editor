@@ -3,9 +3,14 @@ import path from "path";
 import type { FileItem } from "@/components/FileTree";
 
 function getFileItem(fullPath: string, rootPath: string): FileItem | null {
-  const stats = fs.statSync(fullPath);
+  // lstat so symlinks are skipped instead of followed out of the root.
+  const stats = fs.lstatSync(fullPath);
   const relativePath = path.relative(rootPath, fullPath);
   const name = path.basename(fullPath);
+
+  if (stats.isSymbolicLink()) {
+    return null;
+  }
 
   if (stats.isDirectory()) {
     const children = getFilesInDirectory(fullPath, rootPath);
