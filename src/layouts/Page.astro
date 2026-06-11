@@ -3,19 +3,13 @@ import Layout from "../layouts/Layout.astro";
 import SavingStatus from "@/components/SavingStatus.astro";
 
 import { Alert } from "@/components/Alert";
+import { readFlash } from "@/lib/flash";
 
 import "@shoelace-style/shoelace/dist/themes/light.css";
 import CollapseSidebarIcon from "pixelarticons/svg/arrow-bar-left.svg?url";
 import ExpandSidebarIcon from "pixelarticons/svg/arrow-bar-right.svg?url";
 
-const error = Astro.cookies.get("flash_error")?.value;
-const success = Astro.cookies.get("flash_success")?.value;
-const filename = Astro.cookies.get("flash_filename")?.value;
-
-// Clear the flash messages after reading
-Astro.cookies.delete("flash_error");
-Astro.cookies.delete("flash_success");
-Astro.cookies.delete("flash_filename");
+const { error, success, filename } = readFlash(Astro.cookies);
 ---
 
 <Layout title="SSG Editor">

@@ -178,7 +178,7 @@ export function Editor({ content, readOnly, filePath }: EditorProps) {
                 },
               },
               simpleUpload: {
-                uploadUrl: "/upload",
+                uploadUrl: "/api/upload",
               },
               link: {
                 addTargetToExternalLinks: true,

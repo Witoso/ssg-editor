@@ -15,7 +15,7 @@ test("posts the file and reports idle when the server accepts the save", async (
   await saveFile("posts/hello.md", "# Hello");
 
   expect(saveStatus.get()).toBe("idle");
-  expect(fetchMock).toHaveBeenCalledWith("/save", {
+  expect(fetchMock).toHaveBeenCalledWith("/api/save", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({

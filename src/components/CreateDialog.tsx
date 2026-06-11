@@ -6,6 +6,8 @@ import SlInput, {
   type SlInputEvent,
 } from "@shoelace-style/shoelace/dist/react/input/index.js";
 
+import { FILENAME_PATTERN } from "@/lib/filenames";
+
 export function CreateDialog({
   isDialogOpen,
   setIsDialogOpen,
@@ -37,7 +39,7 @@ export function CreateDialog({
           help-text=""
           required
           label="File name"
-          pattern="[a-zA-Z0-9_\-]+"
+          pattern={FILENAME_PATTERN}
         >
           <span slot="prefix">{`${currentFolderPath}/`}</span>
           <span slot="suffix">.md</span>

@@ -3,53 +3,32 @@ import os from "os";
 import path from "path";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 
+import { normalizeConfig } from "@/lib/config";
+
 import { POST } from "./upload";
 
 describe("/upload", () => {
   let tempPath: string;
   let targetPath: string;
-  let previousTargetPath: string | undefined;
-  let previousConfigPath: string | undefined;
 
   beforeEach(async () => {
     tempPath = await fs.mkdtemp(path.join(os.tmpdir(), "ssge-upload-"));
     targetPath = path.join(tempPath, "target");
-    previousTargetPath = process.env.TARGET_PATH;
-    previousConfigPath = process.env.SSG_EDITOR_CONFIG_PATH;
-    process.env.TARGET_PATH = targetPath;
     vi.spyOn(Date, "now").mockReturnValue(123);
   });
 
   afterEach(async () => {
     vi.restoreAllMocks();
 
-    if (previousTargetPath === undefined) {
-      delete process.env.TARGET_PATH;
-    } else {
-      process.env.TARGET_PATH = previousTargetPath;
-    }
-
-    if (previousConfigPath === undefined) {
-      delete process.env.SSG_EDITOR_CONFIG_PATH;
-    } else {
-      process.env.SSG_EDITOR_CONFIG_PATH = previousConfigPath;
-    }
-
     await fs.rm(tempPath, { recursive: true, force: true });
   });
 
   test("writes uploaded images to the configured directory", async () => {
-    const configPath = path.join(tempPath, ".sserc.js");
-    await fs.writeFile(
-      configPath,
-      "export default { images: { uploadDir: 'public/uploads', publicPath: '/uploads' } };",
-    );
-    process.env.SSG_EDITOR_CONFIG_PATH = configPath;
-
     const pngBytes = new Uint8Array([
       0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a, 0x00,
     ]);
     const response = await upload(
+      targetPath,
       new File([pngBytes], "My Image.PNG", { type: "image/png" }),
     );
 
@@ -66,6 +45,7 @@ describe("/upload", () => {
 
   test("rejects non-image uploads", async () => {
     const response = await upload(
+      targetPath,
       new File(["text"], "notes.txt", { type: "text/plain" }),
     );
 
@@ -74,6 +54,7 @@ describe("/upload", () => {
 
   test("rejects non-image bytes disguised with an image name and type", async () => {
     const response = await upload(
+      targetPath,
       new File(["just text"], "fake.png", { type: "image/png" }),
     );
 
@@ -81,14 +62,20 @@ describe("/upload", () => {
   });
 });
 
-function upload(file: File) {
+function upload(targetPath: string, file: File) {
   const data = new FormData();
   data.append("upload", file);
 
   return POST({
-    request: new Request("http://localhost/upload", {
+    request: new Request("http://localhost/api/upload", {
       method: "POST",
       body: data,
     }),
-  } as Parameters<typeof POST>[0]);
+    locals: {
+      targetPath,
+      config: normalizeConfig({
+        images: { uploadDir: "public/uploads", publicPath: "/uploads" },
+      }),
+    },
+  } as unknown as Parameters<typeof POST>[0]);
 }
