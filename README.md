@@ -39,14 +39,16 @@ SSG Editor is running at http://localhost:4321
 
 Navigate to this page in the browser. Create new files or edit the current markdown ones in this folder.
 
-The default port is `4321`; override it with `--port` (or the `PORT` environment variable):
+The default port is `4321` and the server only listens on `localhost`. Override
+either with a flag (or the `PORT` / `HOST` environment variables, or the config
+file below):
 
 ```sh
-ssge path/to/folder --port 8989
+ssge path/to/folder --port 8989 --host 0.0.0.0
 ```
 
-The server only listens on `localhost`. If you need to reach it from another
-device, opt in explicitly with `--host` (e.g. `--host 0.0.0.0`).
+`--host` is how you expose the editor to other devices on your network; leave it
+unset to keep it loopback-only.
 
 ## Configuration
 
@@ -55,12 +57,17 @@ falling back to the directory where you run the `ssge` command.
 
 ```js
 export default {
+  port: 8989,
+  host: "localhost",
   images: {
     uploadDir: "public/uploads",
     publicPath: "/uploads",
   },
 };
 ```
+
+`port` and `host` set where the server listens; a `--port` / `--host` flag or
+the `PORT` / `HOST` environment variable takes precedence over the config file.
 
 Image uploads are written to `uploadDir`, relative to the edited folder. The
 editor inserts URLs using `publicPath`.

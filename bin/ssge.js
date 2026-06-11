@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import { spawn } from "child_process";
-import { fileURLToPath } from "url";
+import { fileURLToPath, pathToFileURL } from "url";
 import { dirname, join, resolve } from "path";
 import { existsSync } from "fs";
 
@@ -9,39 +9,23 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const args = process.argv.slice(2);
-const portFlagIndex = args.indexOf("--port");
-let port = process.env.PORT ?? "4321";
 
-if (portFlagIndex !== -1) {
-  const portValue = args[portFlagIndex + 1];
+// CLI flags take precedence over env vars, the config file, and defaults.
+const cliPort = takeFlagValue("--port");
+const cliHost = takeFlagValue("--host");
 
-  if (!portValue || !/^\d+$/.test(portValue)) {
-    console.error(
-      "Please provide a valid port number: ssge <path_to_folder> --port <port>",
-    );
-    process.exit(1);
-  }
-
-  port = portValue;
-  args.splice(portFlagIndex, 2);
+if (cliPort !== undefined && !/^\d+$/.test(cliPort)) {
+  console.error(
+    "Please provide a valid port number: ssge <path_to_folder> --port <port>",
+  );
+  process.exit(1);
 }
 
-// Only listen beyond the loopback interface when explicitly requested.
-const hostFlagIndex = args.indexOf("--host");
-let host = process.env.HOST ?? "localhost";
-
-if (hostFlagIndex !== -1) {
-  const hostValue = args[hostFlagIndex + 1];
-
-  if (!hostValue || hostValue.startsWith("-")) {
-    console.error(
-      "Please provide a host to listen on: ssge <path_to_folder> --host <address>",
-    );
-    process.exit(1);
-  }
-
-  host = hostValue;
-  args.splice(hostFlagIndex, 2);
+if (cliHost !== undefined && (cliHost === "" || cliHost.startsWith("-"))) {
+  console.error(
+    "Please provide a host to listen on: ssge <path_to_folder> --host <address>",
+  );
+  process.exit(1);
 }
 
 const targetPath = args[0];
@@ -66,6 +50,14 @@ if (!existsSync(absoluteTargetPath)) {
   console.error(`The path "${absoluteTargetPath}" does not exist`);
   process.exit(1);
 }
+
+const config = await loadConfig(resolvedConfigPath);
+
+// Precedence: CLI flag > env var > config file > default.
+const port =
+  cliPort ?? process.env.PORT ?? normalizePort(config.port) ?? "4321";
+const host =
+  cliHost ?? process.env.HOST ?? normalizeHost(config.host) ?? "localhost";
 
 // Get the absolute path to the dist directory
 const distPath = join(__dirname, "..", "dist");
@@ -101,3 +93,43 @@ process.on("SIGTERM", () => {
   server.kill();
   process.exit();
 });
+
+// Reads and removes "--flag value" from args, returning the value (or
+// undefined when the flag is absent).
+function takeFlagValue(flag) {
+  const index = args.indexOf(flag);
+
+  if (index === -1) {
+    return undefined;
+  }
+
+  const value = args[index + 1] ?? "";
+  args.splice(index, 2);
+  return value;
+}
+
+async function loadConfig(configPath) {
+  if (!configPath) {
+    return {};
+  }
+
+  try {
+    const module = await import(pathToFileURL(configPath).href);
+    return module.default ?? module ?? {};
+  } catch (error) {
+    console.error(`Failed to load config "${configPath}":`, error);
+    return {};
+  }
+}
+
+function normalizePort(value) {
+  if (typeof value === "number" && Number.isInteger(value)) {
+    return String(value);
+  }
+
+  return typeof value === "string" && /^\d+$/.test(value) ? value : undefined;
+}
+
+function normalizeHost(value) {
+  return typeof value === "string" && value.length > 0 ? value : undefined;
+}
