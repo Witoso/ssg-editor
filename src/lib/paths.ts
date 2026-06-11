@@ -1,7 +1,15 @@
 import path from "path";
 
 export function getTargetPath(): string {
-  return process.env.TARGET_PATH || path.join(process.cwd(), "demo");
+  const targetPath = process.env.TARGET_PATH;
+
+  if (!targetPath) {
+    throw new Error(
+      "TARGET_PATH is not set. Start the editor with: ssge <path_to_folder>",
+    );
+  }
+
+  return targetPath;
 }
 
 export function resolveTargetFilePath(

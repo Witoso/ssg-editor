@@ -1,7 +1,39 @@
 import path from "path";
-import { describe, expect, test } from "vitest";
+import { afterEach, beforeEach, describe, expect, test } from "vitest";
 
-import { resolveMarkdownFilePath, resolveTargetFilePath } from "./paths";
+import {
+  getTargetPath,
+  resolveMarkdownFilePath,
+  resolveTargetFilePath,
+} from "./paths";
+
+describe("getTargetPath", () => {
+  let previousTargetPath: string | undefined;
+
+  beforeEach(() => {
+    previousTargetPath = process.env.TARGET_PATH;
+  });
+
+  afterEach(() => {
+    if (previousTargetPath === undefined) {
+      delete process.env.TARGET_PATH;
+    } else {
+      process.env.TARGET_PATH = previousTargetPath;
+    }
+  });
+
+  test("returns the configured target path", () => {
+    process.env.TARGET_PATH = "/tmp/site";
+
+    expect(getTargetPath()).toBe("/tmp/site");
+  });
+
+  test("throws a helpful error when TARGET_PATH is missing", () => {
+    delete process.env.TARGET_PATH;
+
+    expect(() => getTargetPath()).toThrow(/TARGET_PATH/);
+  });
+});
 
 describe("resolveTargetFilePath", () => {
   const targetPath = path.join(path.sep, "tmp", "site");
