@@ -61,7 +61,7 @@ if (filePath != "") {
     <Editor
       readOnly={readOnly}
       content={content}
-      filePath={fullPath ?? undefined}
+      filePath={filePath || undefined}
       client:only="react"
     />
   </Fragment>

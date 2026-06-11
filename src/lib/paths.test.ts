@@ -29,6 +29,12 @@ describe("resolveTargetFilePath", () => {
     ).toBeNull();
   });
 
+  test("rejects absolute paths even when they point inside the target path", () => {
+    expect(
+      resolveTargetFilePath(targetPath, path.join(targetPath, "post.md")),
+    ).toBeNull();
+  });
+
   test("does not confuse sibling directories with the target path", () => {
     expect(
       resolveTargetFilePath(

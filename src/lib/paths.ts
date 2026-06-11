@@ -8,6 +8,10 @@ export function resolveTargetFilePath(
   targetPath: string,
   requestedPath: string,
 ): string | null {
+  if (path.isAbsolute(requestedPath)) {
+    return null;
+  }
+
   const resolvedTargetPath = path.resolve(targetPath);
   const resolvedFilePath = path.resolve(resolvedTargetPath, requestedPath);
   const relativePath = path.relative(resolvedTargetPath, resolvedFilePath);

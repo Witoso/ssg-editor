@@ -28,14 +28,26 @@ describe("/save", () => {
   });
 
   test("writes markdown content inside the target path", async () => {
+    const response = await save({
+      filePath: "posts/hello.md",
+      fileContent: "# Hello",
+    });
+
+    await expect(
+      fs.readFile(path.join(targetPath, "posts", "hello.md"), "utf-8"),
+    ).resolves.toBe("# Hello");
+    expect(response.status).toBe(200);
+  });
+
+  test("rejects absolute file paths", async () => {
     const filePath = path.join(targetPath, "posts", "hello.md");
     const response = await save({
       filePath,
       fileContent: "# Hello",
     });
 
-    await expect(fs.readFile(filePath, "utf-8")).resolves.toBe("# Hello");
-    expect(response.status).toBe(200);
+    await expect(fs.stat(filePath)).rejects.toMatchObject({ code: "ENOENT" });
+    expect(response.status).toBe(400);
   });
 
   test("rejects writes outside the target path", async () => {
