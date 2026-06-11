@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 
 import { normalizeConfig } from "@/lib/config";
 
-import { POST } from "./upload";
+import { POST } from "../upload";
 
 describe("/upload", () => {
   let tempPath: string;
