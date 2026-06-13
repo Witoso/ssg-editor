@@ -1,7 +1,7 @@
 import { resolve, isAbsolute, extname } from 'node:path';
 import { defineConfig, mergeConfig, type ViteUserConfig } from 'vitest/config';
 import { translations } from '@ckeditor/ckeditor5-dev-build-tools';
-import { webdriverio } from '@vitest/browser-webdriverio';
+import { playwright } from '@vitest/browser-playwright';
 import svg from 'vite-plugin-svgo';
 import pkgJson from './package.json' with { type: 'json' };
 
@@ -49,9 +49,9 @@ export default defineConfig( ( { mode } ) => {
 			browser: {
 				enabled: true,
 				instances: [
-					{ browser: 'chrome' }
+					{ browser: 'chromium' }
 				],
-				provider: webdriverio(),
+				provider: playwright(),
 				headless: true,
 				ui: false
 			},
