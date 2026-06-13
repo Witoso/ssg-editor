@@ -33,6 +33,7 @@
   },
   "files": [
     "dist",
+    "CHANGELOG.md",
     "ckeditor5-metadata.json"
   ],
   "dependencies": {},
