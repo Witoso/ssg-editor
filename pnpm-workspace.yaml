@@ -1,5 +1,10 @@
+packages:
+  - "packages/*"
+
 allowBuilds:
+  edgedriver: false
   esbuild: true
+  geckodriver: false
   protobufjs: true
   sharp: true
 

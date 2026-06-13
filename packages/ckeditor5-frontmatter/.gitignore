@@ -1,0 +1,18 @@
+.DS_Store
+coverage/
+node_modules/
+.pnpm-store/
+tmp/
+sample/ckeditor.dist.js
+dist/
+
+# Local AI working docs — not published.
+docs/superpowers/
+
+# Test runner artifacts.
+sample/.vitest-attachments/
+tests/__screenshots__/
+
+# Ignore compiled TypeScript files.
+src/**/*.js
+src/**/*.d.ts

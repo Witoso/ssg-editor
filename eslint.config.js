@@ -3,7 +3,7 @@ import tseslint from "typescript-eslint";
 import reactHooks from "eslint-plugin-react-hooks";
 
 export default [
-  { ignores: ["dist/", ".astro/", "node_modules/", "demo/"] },
+  { ignores: ["dist/", ".astro/", "node_modules/", "demo/", "packages/"] },
   ...tseslint.configs.recommended,
   ...eslintPluginAstro.configs["jsx-a11y-recommended"],
   {

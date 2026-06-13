@@ -15,7 +15,7 @@
     "test:browser": "vitest --browser",
     "preview": "astro preview",
     "astro": "astro",
-    "prepare": "pnpm run build",
+    "prepare": "pnpm --filter @witoso/ckeditor5-frontmatter build && pnpm run build",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
@@ -52,7 +52,7 @@
     "@types/react-dom": "^19.2.3",
     "@typescript-eslint/parser": "^8.61.0",
     "@vitest/browser-playwright": "^4.1.8",
-    "@witoso/ckeditor5-frontmatter": "^1.0.0",
+    "@witoso/ckeditor5-frontmatter": "workspace:^",
     "ckeditor5": "^48.2.0",
     "eslint": "^10.4.1",
     "eslint-plugin-astro": "^1.7.0",
