@@ -6,7 +6,5 @@
     "emitDeclarationOnly": true,
     "declarationDir": "dist"
   },
-  "include": [
-    "src"
-  ]
+  "include": ["src"]
 }
