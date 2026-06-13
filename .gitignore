@@ -11,3 +11,6 @@ demo/
 
 # Local superpowers working docs (specs/plans) — not tracked.
 docs/superpowers/
+
+# Local release runbook — not tracked.
+RELEASING.local.md
