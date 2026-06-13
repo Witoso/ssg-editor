@@ -16,7 +16,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 24
           cache: pnpm
 
       - run: pnpm install --frozen-lockfile
@@ -33,3 +33,12 @@ jobs:
 
       - name: Type-check and build
         run: pnpm build
+
+      - name: Plugin lint
+        run: pnpm --filter @witoso/ckeditor5-frontmatter lint
+
+      - name: Plugin tests
+        run: pnpm --filter @witoso/ckeditor5-frontmatter exec vitest run
+
+      - name: Plugin build
+        run: pnpm --filter @witoso/ckeditor5-frontmatter build
