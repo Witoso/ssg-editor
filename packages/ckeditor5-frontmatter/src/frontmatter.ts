@@ -1,5 +1,3 @@
-/* eslint-disable ckeditor5-rules/require-as-const-returns-in-methods */
-
 import { Plugin, type PluginDependencies } from 'ckeditor5';
 import FrontmatterEditing from './frontmatterediting.js';
 import FrontmatterUI from './frontmatterui.js';

@@ -85,10 +85,8 @@ export default class InsertFrontmatterCommand extends Command {
 
 	private _processConfig( defaults: FrontmatterDefaults ) {
 		const config = [];
-		for ( let [ key, value ] of defaults ) {
-			if ( value === '$currentDate' ) {
-				value = this._getCurrentDate();
-			}
+		for ( const [ key, rawValue ] of defaults ) {
+			const value = rawValue === '$currentDate' ? this._getCurrentDate() : rawValue;
 
 			config.push( `${ key }: ${ value }` );
 		}

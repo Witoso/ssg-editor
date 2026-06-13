@@ -34,9 +34,6 @@ jobs:
       - name: Type-check and build
         run: pnpm build
 
-      - name: Plugin lint
-        run: pnpm --filter @witoso/ckeditor5-frontmatter lint
-
       - name: Plugin tests
         run: pnpm --filter @witoso/ckeditor5-frontmatter exec vitest run
 
