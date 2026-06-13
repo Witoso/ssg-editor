@@ -1,0 +1,17 @@
+{
+  "plugins": [
+    {
+      "name": "Frontmatter",
+      "className": "Frontmatter",
+      "description": "Adds frontmatter to the editor.",
+      "path": "src/frontmatter.ts",
+      "uiComponents": [
+        {
+          "name": "frontmatter",
+          "type": "Button",
+          "iconPath": "theme/icons/frontmatter.svg"
+        }
+      ]
+    }
+  ]
+}

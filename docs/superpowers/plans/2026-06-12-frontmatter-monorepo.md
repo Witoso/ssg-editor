@@ -22,6 +22,7 @@
 ### Task 1: Copy the plugin into `packages/ckeditor5-frontmatter/`
 
 **Files:**
+
 - Create: `packages/ckeditor5-frontmatter/**` (copied from `/Users/witold/workspace/ckeditor5-frontmatter/`)
 
 - [ ] **Step 1: Copy the working tree with exclusions**
@@ -67,6 +68,7 @@ No commit yet — the import is committed as one piece in Task 7.
 ### Task 2: Adapt the plugin's `package.json`
 
 **Files:**
+
 - Modify: `packages/ckeditor5-frontmatter/package.json`
 
 - [ ] **Step 1: Point `repository` at the monorepo**
@@ -132,6 +134,7 @@ Expected: `ok`
 ### Task 3: Wire up the workspace at the root
 
 **Files:**
+
 - Modify: `pnpm-workspace.yaml`
 - Modify: `package.json` (root)
 - Modify: `eslint.config.js` (root)
@@ -327,6 +330,7 @@ root lint/format/typecheck are scoped to exclude packages/."
 ### Task 8: Update CI and commit
 
 **Files:**
+
 - Modify: `.github/workflows/ci.yml`
 
 - [ ] **Step 1: Bump Node and add plugin steps**
@@ -439,7 +443,6 @@ Insert at the very top of `/Users/witold/workspace/ckeditor5-frontmatter/README.
 > [`packages/ckeditor5-frontmatter`](https://github.com/Witoso/ssg-wysiwig/tree/main/packages/ckeditor5-frontmatter).
 > The npm package [`@witoso/ckeditor5-frontmatter`](https://www.npmjs.com/package/@witoso/ckeditor5-frontmatter)
 > continues to be published from there.
-
 ```
 
 (Keep the blank line after the blockquote.)

@@ -1,0 +1,50 @@
+:root {
+	--ck-frontmatter-padding: 1em;
+	--ck-frontmatter-font: "SFMono-Regular", Consolas, "Liberation Mono", Menlo,
+		Courier, monospace;
+	--ck-frontmatter-border: initial;
+	--ck-frontmatter-border-focus: none;
+	--ck-frontmatter-box-shadow: initial;
+	--ck-frontmatter-outline: none;
+	--ck-frontmatter-background: hsla(0,0%,78%,.3);
+}
+
+.ck .frontmatter-container > .frontmatter {
+	font-family: var(--ck-frontmatter-font);
+	padding: var(--ck-frontmatter-padding);
+	border: var(--ck-frontmatter-border);
+	box-shadow: var(--ck-frontmatter-border-shadow);
+	outline: var(--ck-frontmatter-outline);
+	background-color: var(--ck-frontmatter-background);
+}
+
+.ck .frontmatter.ck-editor__nested-editable.ck-editor__nested-editable_focused:not(td,th)  {
+	border: var(--ck-frontmatter-border-focus);
+}
+
+.frontmatter::before,
+.frontmatter::after {
+	content: "---";
+	display: block; /* Makes sure dashes are on a new line */
+	user-select: none; /* Makes the content non-selectable */
+	pointer-events: none; /* Prevents interaction like hover, click, etc. */
+}
+
+/*
+ * Collapsed state: with the `collapsible` option on, the frontmatter only shows its
+ * full content while hovered or while the selection is inside it (editor focused).
+ */
+.ck .frontmatter-container.frontmatter-collapsible:not(:hover, .frontmatter-selected) > .frontmatter {
+	display: none;
+}
+
+.ck .frontmatter-container.frontmatter-collapsible:not(:hover, .frontmatter-selected)::before {
+	content: "---\A...\A---";
+	display: block;
+	white-space: pre;
+	font-family: var(--ck-frontmatter-font);
+	padding: var(--ck-frontmatter-padding);
+	border: var(--ck-frontmatter-border);
+	background-color: var(--ck-frontmatter-background);
+	user-select: none;
+}
