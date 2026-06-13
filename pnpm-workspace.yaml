@@ -2,6 +2,9 @@ packages:
   - "packages/*"
 
 allowBuilds:
+  # vitest pulls @vitest/browser-webdriverio (and thus webdriverio →
+  # edgedriver/geckodriver) transitively even though we use the Playwright
+  # provider. These browser-driver build scripts aren't needed; skip them.
   edgedriver: false
   esbuild: true
   geckodriver: false

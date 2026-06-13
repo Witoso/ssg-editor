@@ -2,11 +2,7 @@
   "compilerOptions": {
     "target": "es2022",
     "module": "esnext",
-    "lib": [
-      "ES2022",
-      "DOM",
-      "DOM.Iterable"
-    ],
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "skipLibCheck": true,
     "types": [
       "vite/client",
@@ -23,9 +19,5 @@
     "noImplicitAny": true,
     "noImplicitOverride": true
   },
-  "include": [
-    "sample",
-    "src",
-    "tests"
-  ]
+  "include": ["sample", "src", "tests"]
 }

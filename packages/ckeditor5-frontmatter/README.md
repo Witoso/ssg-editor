@@ -1,5 +1,4 @@
-@witoso/ckeditor5-frontmatter
-=============================
+# @witoso/ckeditor5-frontmatter
 
 ![Frontmatter Example](docs/screen.png "Example of Frontmatter Plugin")
 
@@ -22,31 +21,24 @@ tags: [ckeditor, markdown]
 Add `Frontmatter` next to CKEditor 5's `Markdown` plugin:
 
 ```ts
-import { ClassicEditor, Essentials, Markdown, Paragraph } from 'ckeditor5';
-import { Frontmatter } from '@witoso/ckeditor5-frontmatter';
+import { ClassicEditor, Essentials, Markdown, Paragraph } from "ckeditor5";
+import { Frontmatter } from "@witoso/ckeditor5-frontmatter";
 
-ClassicEditor.create( document.querySelector( '#editor' )!, {
-	licenseKey: 'GPL',
-	plugins: [
-		Essentials,
-		Markdown,
-		Paragraph,
-		Frontmatter
-	],
-	toolbar: [
-		'frontmatter'
-	]
-} );
+ClassicEditor.create(document.querySelector("#editor")!, {
+  licenseKey: "GPL",
+  plugins: [Essentials, Markdown, Paragraph, Frontmatter],
+  toolbar: ["frontmatter"],
+});
 ```
 
 Use the standard CKEditor 5 data API:
 
 ```ts
-editor.setData( `---
+editor.setData(`---
 title: Hello
 ---
 
-## Heading` );
+## Heading`);
 
 const markdown = editor.getData();
 ```
@@ -59,17 +51,17 @@ The `frontmatter` config can define fields inserted by the toolbar button and
 the collapse behavior:
 
 ```ts
-ClassicEditor.create( element, {
-	// ...
-	frontmatter: {
-		defaults: new Map( [
-			[ 'title', '' ],
-			[ 'draft', 'true' ],
-			[ 'date', '$currentDate' ]
-		] ),
-		collapsible: true
-	}
-} );
+ClassicEditor.create(element, {
+  // ...
+  frontmatter: {
+    defaults: new Map([
+      ["title", ""],
+      ["draft", "true"],
+      ["date", "$currentDate"],
+    ]),
+    collapsible: true,
+  },
+});
 ```
 
 - `defaults` — fields prefilled when the frontmatter is inserted from the toolbar.
@@ -130,10 +122,10 @@ Advanced integrations can access the wrapped processor through `FrontmatterDataP
 
 ## Caveats
 
-* Only a document-start `---` block is treated as frontmatter.
-* Copying and pasting frontmatter is not fully supported.
-* Multi-root editors are not supported.
-* The frontmatter parser preserves text and common Markdown escapes, but it does not validate YAML.
+- Only a document-start `---` block is treated as frontmatter.
+- Copying and pasting frontmatter is not fully supported.
+- Multi-root editors are not supported.
+- The frontmatter parser preserves text and common Markdown escapes, but it does not validate YAML.
 
 ## Development
 

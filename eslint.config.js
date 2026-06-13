@@ -3,10 +3,20 @@ import tseslint from "typescript-eslint";
 import reactHooks from "eslint-plugin-react-hooks";
 
 export default [
-  { ignores: ["dist/", ".astro/", "node_modules/", "demo/", "packages/"] },
+  {
+    ignores: [
+      "**/dist/",
+      ".astro/",
+      "**/node_modules/",
+      "demo/",
+      "**/coverage/",
+      "**/*.dist.js",
+    ],
+  },
   ...tseslint.configs.recommended,
   ...eslintPluginAstro.configs["jsx-a11y-recommended"],
   {
+    // React hooks rules apply to the app only.
     files: ["src/**/*.{ts,tsx}"],
     plugins: { "react-hooks": reactHooks },
     rules: reactHooks.configs.recommended.rules,

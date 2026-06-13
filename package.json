@@ -25,6 +25,7 @@
   "files": [
     "dist",
     "bin",
+    "CHANGELOG.md",
     "LICENSE.md",
     "README.md",
     "package.json"
