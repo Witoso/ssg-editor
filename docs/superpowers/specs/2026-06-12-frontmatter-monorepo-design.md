@@ -54,8 +54,9 @@ Copy everything from the plugin working tree EXCEPT: `node_modules/`,
 
 Plugin `package.json` changes:
 
-- `repository` → `git+https://github.com/Witoso/ssg-editor.git` with
-  `"directory": "packages/ckeditor5-frontmatter"`.
+- `repository` → `git+https://github.com/Witoso/ssg-wysiwig.git` with
+  `"directory": "packages/ckeditor5-frontmatter"`. (The GitHub repo backing
+  this working dir is named `ssg-wysiwig`, not `ssg-editor`.)
 - Remove `husky` and `lint-staged` (devDeps, `scripts` hooks, config blocks).
   The monorepo root owns repo-level conventions.
 - Everything else (build/test tooling, peerDeps, `files`, `exports`,
@@ -79,11 +80,11 @@ publish. Versions stay independent.
 
 ## Old repo archival
 
-In `Witoso/ckeditor5-frontmatter` (leaving the uncommitted work untouched —
-it migrates via the import):
+In `Witoso/ckeditor5-frontmatter` (the uncommitted work migrates via the
+import, then is stashed in the old repo so the README notice lands clean):
 
 1. Prepend a notice to README.md: development moved to
-   `Witoso/ssg-editor` under `packages/ckeditor5-frontmatter`; the npm
+   `Witoso/ssg-wysiwig` under `packages/ckeditor5-frontmatter`; the npm
    package `@witoso/ckeditor5-frontmatter` continues to be published from
    there.
 2. Commit and push the README change only.
