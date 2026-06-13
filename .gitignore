@@ -8,3 +8,6 @@ demo/
 *.tgz
 .astro
 .DS_Store
+
+# Local superpowers working docs (specs/plans) — not tracked.
+docs/superpowers/
