@@ -37,7 +37,7 @@ import {
   type EditorConfig,
 } from "ckeditor5";
 
-import { Frontmatter } from "@witoso/ckeditor5-frontmatter";
+import { Frontmatter, FrontmatterToolbar } from "@witoso/ckeditor5-frontmatter";
 
 // Static editor configuration; the per-instance autosave handler is
 // added in the Editor component.
@@ -47,6 +47,7 @@ export const editorConfig: EditorConfig = {
     Autosave,
     Essentials,
     Frontmatter,
+    FrontmatterToolbar,
     Autoformat,
     AutoLink,
     BalloonToolbar,
