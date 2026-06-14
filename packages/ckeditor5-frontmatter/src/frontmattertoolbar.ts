@@ -1,4 +1,9 @@
-import { ButtonView, Plugin, WidgetToolbarRepository } from "ckeditor5";
+import {
+  ButtonView,
+  IconLowVision,
+  Plugin,
+  WidgetToolbarRepository,
+} from "ckeditor5";
 import ToggleFrontmatterCollapseCommand from "./togglefrontmattercollapsecommand.js";
 import { getSelectedFrontmatterWidget } from "./utils.js";
 
@@ -50,7 +55,7 @@ export default class FrontmatterToolbar extends Plugin {
       ) as ToggleFrontmatterCollapseCommand;
       const button = new ButtonView(locale);
 
-      button.set({ withText: true, tooltip: true });
+      button.set({ icon: IconLowVision, tooltip: true });
 
       button.bind("isEnabled").to(command, "isEnabled");
       button.bind("isOn").to(command, "value");
