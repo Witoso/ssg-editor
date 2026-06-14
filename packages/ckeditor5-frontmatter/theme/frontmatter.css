@@ -35,23 +35,15 @@
 }
 
 /*
- * Collapsed state: with the `collapsible` option on, the frontmatter only shows its
- * full content while hovered or while the selection is inside it (editor focused).
+ * Collapsed state: the `FrontmatterToolbar` plugin toggles `.frontmatter-collapsed`
+ * via JS. While collapsed, the editable content is hidden and a `--- / ... / ---`
+ * placeholder is shown in its place.
  */
-.ck
-  .frontmatter-container.frontmatter-collapsible:not(
-    :hover,
-    .frontmatter-selected
-  )
-  > .frontmatter {
+.ck .frontmatter-container.frontmatter-collapsed > .frontmatter {
   display: none;
 }
 
-.ck
-  .frontmatter-container.frontmatter-collapsible:not(
-    :hover,
-    .frontmatter-selected
-  )::before {
+.ck .frontmatter-container.frontmatter-collapsed::before {
   content: "---\A...\A---";
   display: block;
   white-space: pre;
@@ -60,4 +52,13 @@
   border: var(--ck-frontmatter-border);
   background-color: var(--ck-frontmatter-background);
   user-select: none;
+}
+
+/*
+ * The frontmatter is pinned to the top of the document, so only the
+ * "insert paragraph after" type-around affordance is meaningful. Hide the
+ * "before" button (WidgetTypeAround exposes no per-position API).
+ */
+.ck .frontmatter-container.ck-widget .ck-widget__type-around__button_before {
+  display: none;
 }
