@@ -5,6 +5,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+- Opening a file no longer triggers a spurious save: the content is now passed
+  as the editor's initial data instead of via `setData()`, which Autosave
+  treated as an edit and immediately wrote back to disk.
 - Long file and folder names in the sidebar now truncate to a single line with
   an ellipsis and a hover tooltip, with tighter tree indentation, instead of
   wrapping or forcing horizontal scroll.

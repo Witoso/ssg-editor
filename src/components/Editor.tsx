@@ -32,6 +32,12 @@ export function Editor({ content, filePath }: EditorProps) {
         <div className="prose w-full">
           <CKEditor
             editor={DecoupledEditor}
+            // Pass the file content as the editor's initial data instead of
+            // calling setData() in onReady: a programmatic setData fires the
+            // document's change:data event, which Autosave treats as an edit
+            // and immediately saves the freshly opened file. Initial data is
+            // the baseline and does not trigger a save.
+            data={content}
             config={{
               ...editorConfig,
               autosave: {
@@ -54,7 +60,6 @@ export function Editor({ content, filePath }: EditorProps) {
                 },
               );
 
-              editor.setData(content);
               const toolbar = editor.ui?.view?.toolbar;
               if (editorToolbarRef?.current && toolbar?.element) {
                 editorToolbarRef.current.appendChild(toolbar.element);
