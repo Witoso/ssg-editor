@@ -82,7 +82,12 @@ export default class FrontmatterToolbar extends Plugin {
         (_evt, data, conversionApi) => {
           const viewElement = conversionApi.mapper.toViewElement(data.item)!;
 
-          conversionApi.writer.addClass("frontmatter-collapsed", viewElement);
+          // Respect the current state: the absent/`true` attribute renders
+          // collapsed, but a re-insert (e.g. when the post-fixer relocates the
+          // frontmatter) must not force an expanded one back to collapsed.
+          if (data.item.getAttribute("collapsed") !== false) {
+            conversionApi.writer.addClass("frontmatter-collapsed", viewElement);
+          }
         },
         { priority: "low" },
       );

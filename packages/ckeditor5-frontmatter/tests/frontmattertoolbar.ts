@@ -80,6 +80,25 @@ describe("FrontmatterToolbar", () => {
 
       expect(editor!.getData()).toBe(content);
     });
+
+    it("stays expanded when the post-fixer relocates the frontmatter", () => {
+      editor!.setData("---\ntitle: Title\n---\n\nBody.");
+      editor!.execute("toggleFrontmatterCollapse");
+
+      // Insert content before the frontmatter so the post-fixer moves it,
+      // which re-inserts the widget in the editing view.
+      editor!.model.change((writer) => {
+        const paragraph = writer.createElement("paragraph");
+
+        writer.insertText("Intro", paragraph, 0);
+        writer.insert(
+          paragraph,
+          writer.createPositionAt(editor!.model.document.getRoot()!, 0),
+        );
+      });
+
+      expect(getViewContainer().hasClass("frontmatter-collapsed")).toBe(false);
+    });
   });
 
   describe("toggleFrontmatterCollapse command", () => {
