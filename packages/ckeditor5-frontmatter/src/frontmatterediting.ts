@@ -1,6 +1,9 @@
 import {
   Plugin,
   ViewUpcastWriter,
+  Widget,
+  toWidget,
+  toWidgetEditable,
   type Editor,
   type ViewDocumentClipboardInputEvent,
 } from "ckeditor5";
@@ -17,6 +20,10 @@ import {
 export default class FrontmatterEditing extends Plugin {
   public static get pluginName() {
     return "FrontmatterEditing" as const;
+  }
+
+  public static get requires() {
+    return [Widget] as const;
   }
 
   declare public frontmatterLoaded: boolean;
@@ -49,10 +56,6 @@ export default class FrontmatterEditing extends Plugin {
     // Access the configuration
     const frontmatterConfig = this.editor.config.get("frontmatter");
 
-    if (frontmatterConfig?.collapsible) {
-      this._defineCollapseHandling();
-    }
-
     this.editor.commands.add(
       "insertFrontmatter",
       new InsertFrontmatterCommand(this.editor, frontmatterConfig),
@@ -75,6 +78,10 @@ export default class FrontmatterEditing extends Plugin {
       allowIn: "$root",
       allowChildren: "frontmatter",
       isLimit: true,
+      // Object widget (image-with-caption pattern): selectable as a unit so the
+      // collapsed box — whose content is hidden — can be clicked to summon the
+      // widget toolbar, and so a real Backspace selects it before removing it.
+      isObject: true,
     });
 
     schema.register("frontmatter", {
@@ -113,9 +120,15 @@ export default class FrontmatterEditing extends Plugin {
 
     conversion.for("editingDowncast").elementToElement({
       model: "frontmatterContainer",
-      view: {
-        name: "section",
-        classes: "frontmatter-container",
+      view: (_modelElement, { writer }) => {
+        const section = writer.createContainerElement("section", {
+          class: "frontmatter-container",
+        });
+
+        // Tag the widget so the toolbar's getRelatedElement can recognise it.
+        writer.setCustomProperty("frontmatter", true, section);
+
+        return toWidget(section, writer);
       },
     });
 
@@ -146,11 +159,12 @@ export default class FrontmatterEditing extends Plugin {
     // Model to View conversion.
     conversion.for("editingDowncast").elementToElement({
       model: "frontmatter",
-      view: {
-        // We use custom element if someone would like to
-        // keepHtml div for example.
-        name: "div",
-        classes: "frontmatter",
+      view: (_modelElement, { writer }) => {
+        const div = writer.createEditableElement("div", {
+          class: "frontmatter",
+        });
+
+        return toWidgetEditable(div, writer);
       },
     });
 
@@ -228,62 +242,6 @@ export default class FrontmatterEditing extends Plugin {
       },
       { priority: "high" },
     );
-  }
-
-  private _defineCollapseHandling() {
-    const editor = this.editor;
-    const model = editor.model;
-    const viewDocument = editor.editing.view.document;
-
-    // The selection only keeps the frontmatter expanded while the editor is focused —
-    // otherwise the default selection placed at document start would render every
-    // loaded document with the frontmatter expanded.
-    this.listenTo(viewDocument, "change:isFocused", () => {
-      editor.editing.view.change(() => {});
-    });
-
-    // The CSS collapses the container unless it is hovered or carries the
-    // `frontmatter-selected` class. A view post-fixer (rather than a one-shot selection
-    // listener) keeps the classes correct across reconversion and undo.
-    viewDocument.registerPostFixer((writer) => {
-      const root = model.document.getRoot();
-      const containerModel = root?.getChild(0);
-
-      if (
-        !containerModel ||
-        !containerModel.is("element", "frontmatterContainer")
-      ) {
-        return false;
-      }
-
-      const containerView = editor.editing.mapper.toViewElement(containerModel);
-
-      if (!containerView) {
-        return false;
-      }
-
-      let changed = false;
-
-      if (!containerView.hasClass("frontmatter-collapsible")) {
-        writer.addClass("frontmatter-collapsible", containerView);
-        changed = true;
-      }
-
-      const selectionInside =
-        viewDocument.isFocused && inFrontmatter(model.document.selection);
-
-      if (selectionInside !== containerView.hasClass("frontmatter-selected")) {
-        if (selectionInside) {
-          writer.addClass("frontmatter-selected", containerView);
-        } else {
-          writer.removeClass("frontmatter-selected", containerView);
-        }
-
-        changed = true;
-      }
-
-      return changed;
-    });
   }
 
   private _defineClipboardHandling() {

@@ -9,6 +9,7 @@ import {
   Markdown,
   Paragraph,
   Plugin,
+  isWidget,
   type ModelElement,
   type ViewElement,
 } from "ckeditor5";
@@ -122,14 +123,16 @@ describe("Frontmatter", () => {
       return editor?.destroy();
     });
 
-    it("empty frontmatter and editor will return empty", () => {
+    it("returns the empty delimiters after inserting an empty frontmatter", () => {
       const icon = editor.ui.componentFactory.create("frontmatter");
 
       expect(editor.getData()).toBe("");
 
       icon.fire("execute");
 
-      expect(editor.getData()).toBe("");
+      // The frontmatter is now an object widget (content), so an empty one
+      // serializes to its delimiters instead of being trimmed away.
+      expect(editor.getData()).toBe("---\n\n---");
     });
 
     it("should set/get frontmatter correctly through the data processor", () => {
@@ -403,7 +406,7 @@ describe("Frontmatter", () => {
       );
     });
 
-    it("should not merge the first body paragraph into the frontmatter on backspace", () => {
+    it("selects the frontmatter instead of merging on backspace from the body start", () => {
       editor!.setData("---\ntitle: Title\n---\n\nBody.");
 
       editor!.model.change((writer) => {
@@ -413,9 +416,20 @@ describe("Frontmatter", () => {
         );
       });
 
-      editor!.execute("delete");
+      // A real Backspace keystroke goes through the widget delete handling,
+      // which selects the object widget rather than removing it — body text
+      // cannot merge into the frontmatter.
+      editor!.editing.view.document.fire("delete", {
+        direction: "backward",
+        unit: "character",
+        sequence: 1,
+        preventDefault() {},
+      });
 
       expect(editor!.getData()).toBe("---\ntitle: Title\n---\n\nBody.");
+      expect(editor!.model.document.selection.getSelectedElement()).toBe(
+        editor!.model.document.getRoot()!.getChild(0),
+      );
     });
 
     it("should not pull body text into the frontmatter on forward delete", () => {
@@ -448,7 +462,7 @@ describe("Frontmatter", () => {
     });
   });
 
-  describe("collapsible", () => {
+  describe("widget", () => {
     let domElement: HTMLElement, editor: ClassicEditor | undefined;
 
     beforeEach(async () => {
@@ -459,9 +473,6 @@ describe("Frontmatter", () => {
         plugins: [Paragraph, Heading, Essentials, Frontmatter, Markdown],
         toolbar: ["frontmatter"],
         licenseKey: "GPL",
-        frontmatter: {
-          collapsible: true,
-        },
       });
     });
 
@@ -476,83 +487,22 @@ describe("Frontmatter", () => {
         .getChild(0) as ViewElement;
     }
 
-    function getModelFrontmatter() {
-      const container = editor!.model.document
-        .getRoot()!
-        .getChild(0) as ModelElement;
+    it("registers the frontmatter container as a schema object", () => {
+      expect(editor!.model.schema.isObject("frontmatterContainer")).toBe(true);
+    });
 
-      return container.getChild(0) as ModelElement;
-    }
-
-    it("should mark the frontmatter container as collapsible", () => {
+    it("downcasts the container to a widget", () => {
       editor!.setData("---\ntitle: Title\n---\n\nBody.");
 
-      expect(getViewContainer().hasClass("frontmatter-collapsible")).toBe(true);
+      expect(isWidget(getViewContainer())).toBe(true);
     });
 
-    it("should mark the container while the selection is inside the focused frontmatter", () => {
+    it("downcasts the inner frontmatter to a nested editable", () => {
       editor!.setData("---\ntitle: Title\n---\n\nBody.");
 
-      // The default selection lands inside the frontmatter, but the editor
-      // is not focused yet — the frontmatter must stay collapsed on load.
-      expect(getViewContainer().hasClass("frontmatter-selected")).toBe(false);
+      const inner = getViewContainer().getChild(0) as ViewElement;
 
-      editor!.editing.view.document.isFocused = true;
-
-      expect(getViewContainer().hasClass("frontmatter-selected")).toBe(true);
-
-      editor!.model.change((writer) => {
-        writer.setSelection(
-          editor!.model.document.getRoot()!.getChild(1) as ModelElement,
-          "end",
-        );
-      });
-
-      expect(getViewContainer().hasClass("frontmatter-selected")).toBe(false);
-
-      editor!.model.change((writer) => {
-        writer.setSelection(getModelFrontmatter(), "end");
-      });
-
-      expect(getViewContainer().hasClass("frontmatter-selected")).toBe(true);
-
-      editor!.editing.view.document.isFocused = false;
-
-      expect(getViewContainer().hasClass("frontmatter-selected")).toBe(false);
-    });
-
-    it("should not affect the data output", () => {
-      const content = "---\ntitle: Title\n---\n\nBody.";
-
-      editor!.setData(content);
-
-      expect(editor!.getData()).toBe(content);
-    });
-
-    it("should not mark the container when the option is disabled", async () => {
-      domElement.remove();
-      await editor!.destroy();
-
-      domElement = document.createElement("div");
-      document.body.appendChild(domElement);
-
-      editor = await ClassicEditor.create(domElement, {
-        plugins: [Paragraph, Heading, Essentials, Frontmatter, Markdown],
-        toolbar: ["frontmatter"],
-        licenseKey: "GPL",
-      });
-
-      editor.setData("---\ntitle: Title\n---\n\nBody.");
-
-      expect(getViewContainer().hasClass("frontmatter-collapsible")).toBe(
-        false,
-      );
-
-      editor.model.change((writer) => {
-        writer.setSelection(getModelFrontmatter(), "end");
-      });
-
-      expect(getViewContainer().hasClass("frontmatter-selected")).toBe(false);
+      expect(inner.is("editableElement")).toBe(true);
     });
   });
 
