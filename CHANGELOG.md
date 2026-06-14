@@ -5,6 +5,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+- Long file and folder names in the sidebar now truncate to a single line with
+  an ellipsis and a hover tooltip, with tighter tree indentation, instead of
+  wrapping or forcing horizontal scroll.
+- The CLI now refuses to start when the requested port is already in use
+  instead of silently drifting to another port.
+- Hide the underlying framework's log lines from the CLI output.
+
 ## 0.5.0 (2026-06-12)
 
 - Configurable port and host via `.sserc.js`, the `--port` / `--host` flags,
