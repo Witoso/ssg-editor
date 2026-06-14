@@ -1,5 +1,6 @@
-import { Plugin, WidgetToolbarRepository } from "ckeditor5";
+import { ButtonView, Plugin, WidgetToolbarRepository } from "ckeditor5";
 import ToggleFrontmatterCollapseCommand from "./togglefrontmattercollapsecommand.js";
+import { getSelectedFrontmatterWidget } from "./utils.js";
 
 import "../theme/frontmatter.css";
 
@@ -25,6 +26,46 @@ export default class FrontmatterToolbar extends Plugin {
       "toggleFrontmatterCollapse",
       new ToggleFrontmatterCollapseCommand(editor),
     );
+
+    this._defineButton();
+  }
+
+  public afterInit(): void {
+    const editor = this.editor;
+    const widgetToolbarRepository = editor.plugins.get(WidgetToolbarRepository);
+
+    widgetToolbarRepository.register("frontmatter", {
+      items: ["toggleFrontmatterCollapse"],
+      getRelatedElement: getSelectedFrontmatterWidget,
+    });
+  }
+
+  private _defineButton(): void {
+    const editor = this.editor;
+    const t = editor.t;
+
+    editor.ui.componentFactory.add("toggleFrontmatterCollapse", (locale) => {
+      const command = editor.commands.get(
+        "toggleFrontmatterCollapse",
+      ) as ToggleFrontmatterCollapseCommand;
+      const button = new ButtonView(locale);
+
+      button.set({ withText: true, tooltip: true });
+
+      button.bind("isEnabled").to(command, "isEnabled");
+      button.bind("isOn").to(command, "value");
+      button
+        .bind("label")
+        .to(command, "value", (value) =>
+          value ? t("Expand frontmatter") : t("Collapse frontmatter"),
+        );
+
+      this.listenTo(button, "execute", () =>
+        editor.execute("toggleFrontmatterCollapse"),
+      );
+
+      return button;
+    });
   }
 
   // The `collapsed` model attribute is editing-only (never serialized to
