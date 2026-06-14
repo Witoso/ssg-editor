@@ -282,47 +282,38 @@ export default class FrontmatterEditing extends Plugin {
         return false;
       }
 
-      const changes = document.differ.getChanges();
+      // Fast path: the frontmatter already sits at the top — nothing to move.
+      const firstChild = root.getChild(0);
 
-      for (const entry of changes) {
-        if (entry.type == "insert" && entry.name === "frontmatterContainer") {
-          this.set("frontmatterLoaded", true);
+      if (firstChild && firstChild.is("element", "frontmatterContainer")) {
+        this.set("frontmatterLoaded", true);
 
-          const possibleFrontmatterContainer = root.getChild(0);
+        return false;
+      }
 
-          if (
-            possibleFrontmatterContainer &&
-            possibleFrontmatterContainer.is("element", "frontmatterContainer")
-          ) {
-            // If the frontmatterContainer is already at the top, no change is needed
-            return false;
-          }
+      // Otherwise look for a misplaced frontmatter. Content can land before it
+      // through paste or widget type-around, so the frontmatter must be pinned
+      // back to the start of the document.
+      let frontmatterContainer = null;
 
-          const frontmatterContainer = entry.position.nodeAfter;
-
-          if (!frontmatterContainer) {
-            return false;
-          }
-
-          const startPosition = model.createPositionAt(root, 0);
-
-          // Move the frontmatterContainer to the start of the document
-          writer.move(
-            writer.createRangeOn(frontmatterContainer),
-            startPosition,
-          );
-
-          // Indicate that changes were made
-          return true;
-        }
-
-        // const range = model.createRangeIn( root );
-        if (entry.type == "remove" && entry.name === "frontmatterContainer") {
-          this.set("frontmatterLoaded", false);
+      for (const child of root.getChildren()) {
+        if (child.is("element", "frontmatterContainer")) {
+          frontmatterContainer = child;
+          break;
         }
       }
 
-      // No changes were made
+      this.set("frontmatterLoaded", frontmatterContainer !== null);
+
+      if (frontmatterContainer) {
+        writer.move(
+          writer.createRangeOn(frontmatterContainer),
+          model.createPositionAt(root, 0),
+        );
+
+        return true;
+      }
+
       return false;
     });
   }

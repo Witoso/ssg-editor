@@ -197,6 +197,31 @@ describe("Frontmatter", () => {
       expect(editor.getData()).toBe("---\n\n---\n\n## Heading 1");
     });
 
+    it("keeps the frontmatter at the top when content is inserted before it", () => {
+      editor.setData("---\ntitle: Title\n---\n\nBody.");
+
+      editor.model.change((writer) => {
+        const paragraph = writer.createElement("paragraph");
+
+        writer.insertText("Intro", paragraph, 0);
+        writer.insert(
+          paragraph,
+          writer.createPositionAt(editor!.model.document.getRoot()!, 0),
+        );
+      });
+
+      // The post-fixer relocates the frontmatter back above the new paragraph.
+      expect(
+        editor.model.document
+          .getRoot()!
+          .getChild(0)!
+          .is("element", "frontmatterContainer"),
+      ).toBe(true);
+      expect(editor.getData()).toBe(
+        "---\ntitle: Title\n---\n\nIntro\n\nBody.",
+      );
+    });
+
     it("should be symmetrical", () => {
       expect(editor.getData()).toBe("");
 

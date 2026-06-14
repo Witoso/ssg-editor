@@ -24,6 +24,9 @@
     th
   ) {
   border: var(--ck-frontmatter-border-focus);
+  /* Keep the frontmatter gray when focused instead of the default white
+     widget-editable focus background. */
+  background-color: var(--ck-frontmatter-background);
 }
 
 .frontmatter::before,

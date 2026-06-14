@@ -25,7 +25,7 @@ import {
   TableToolbar,
 } from "ckeditor5";
 
-import { Frontmatter } from "../src/index.js";
+import { Frontmatter, FrontmatterToolbar } from "../src/index.js";
 
 import "ckeditor5/ckeditor5.css";
 
@@ -41,6 +41,7 @@ ClassicEditor.create({
   placeholder: "Start writing...",
   plugins: [
     Frontmatter,
+    FrontmatterToolbar,
     Markdown,
     Essentials,
     Autoformat,
@@ -105,7 +106,6 @@ ClassicEditor.create({
       ["title", ""],
       ["date", "$currentDate"],
     ]),
-    collapsible: true,
   },
 })
   .then((editor) => {
