@@ -48,6 +48,21 @@ describe("FrontmatterToolbar", () => {
     expect(FrontmatterToolbar.pluginName).toBe("FrontmatterToolbar");
   });
 
+  it("loads FrontmatterEditing without the Frontmatter umbrella", async () => {
+    const element = document.createElement("div");
+    document.body.appendChild(element);
+
+    const standalone = await ClassicEditor.create(element, {
+      plugins: [Paragraph, Essentials, FrontmatterToolbar],
+      licenseKey: "GPL",
+    });
+
+    expect(standalone.plugins.has("FrontmatterEditing")).toBe(true);
+
+    await standalone.destroy();
+    element.remove();
+  });
+
   describe("collapse downcast", () => {
     it("collapses the frontmatter by default", () => {
       editor!.setData("---\ntitle: Title\n---\n\nBody.");

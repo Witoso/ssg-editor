@@ -4,6 +4,7 @@ import {
   Plugin,
   WidgetToolbarRepository,
 } from "ckeditor5";
+import FrontmatterEditing from "./frontmatterediting.js";
 import ToggleFrontmatterCollapseCommand from "./togglefrontmattercollapsecommand.js";
 import { getSelectedFrontmatterWidget } from "./utils.js";
 
@@ -15,7 +16,10 @@ export default class FrontmatterToolbar extends Plugin {
   }
 
   public static get requires() {
-    return [WidgetToolbarRepository] as const;
+    // The toolbar extends the `frontmatterContainer` schema (registered by
+    // FrontmatterEditing), so it must load even when the Frontmatter umbrella
+    // is not in the plugin list — otherwise `schema.extend` throws on init.
+    return [FrontmatterEditing, WidgetToolbarRepository] as const;
   }
 
   public init(): void {

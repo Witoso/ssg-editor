@@ -34,6 +34,9 @@ coverage.
 - `FrontmatterToolbar` (opt-in): owns collapse — the `collapsed` attribute, its
   editing downcast, `ToggleFrontmatterCollapseCommand`, the toggle button
   (uses `IconLowVision`, the eye icon), and the `WidgetToolbarRepository` balloon.
+  It `requires` `FrontmatterEditing` (it `schema.extend`s `frontmatterContainer`,
+  which throws if that item is unregistered), so adding `FrontmatterToolbar`
+  alone — without the umbrella — still auto-loads editing.
 - `FrontmatterDataProcessor` wraps the Markdown processor; frontmatter ↔ `---`
   delimited YAML. Conversion: `frontmatterContainer` → `<section.frontmatter-container>`,
   `frontmatter` → `<div.frontmatter>` (data) / `<frontmatter>` (markdown).
