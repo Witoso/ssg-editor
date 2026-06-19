@@ -5,6 +5,9 @@ The format follows [Keep a Changelog](https://keepachangelog.com/).
 
 ## Unreleased
 
+- Added a `pre-commit` hook (Husky + lint-staged) that auto-formats and lints
+  staged files, preventing formatting/lint failures from reaching CI.
+
 ## 0.5.0 (2026-06-12)
 
 - Configurable port and host via `.sserc.js`, the `--port` / `--host` flags,
