@@ -217,9 +217,7 @@ describe("Frontmatter", () => {
           .getChild(0)!
           .is("element", "frontmatterContainer"),
       ).toBe(true);
-      expect(editor.getData()).toBe(
-        "---\ntitle: Title\n---\n\nIntro\n\nBody.",
-      );
+      expect(editor.getData()).toBe("---\ntitle: Title\n---\n\nIntro\n\nBody.");
     });
 
     it("should be symmetrical", () => {

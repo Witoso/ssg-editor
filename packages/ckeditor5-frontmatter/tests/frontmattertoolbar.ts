@@ -225,9 +225,9 @@ describe("FrontmatterToolbar", () => {
 
   describe("toggle button", () => {
     it("registers the toggleFrontmatterCollapse component", () => {
-      expect(
-        editor!.ui.componentFactory.has("toggleFrontmatterCollapse"),
-      ).toBe(true);
+      expect(editor!.ui.componentFactory.has("toggleFrontmatterCollapse")).toBe(
+        true,
+      );
     });
 
     it("registers the frontmatter widget toolbar", () => {

@@ -63,8 +63,8 @@ coverage.
 - **`execute("delete")` ≠ real Backspace.** The Widget plugin's safe two-step
   delete listens to the view `delete` event; the command path one-shot deletes.
   To test real Backspace, `view.document.fire("delete", { direction: "backward",
-  ... })`, not `editor.execute("delete")`.
-- **Post-fixer pins to index 0** for *any* preceding insert (paste, widget
+... })`, not `editor.execute("delete")`.
+- **Post-fixer pins to index 0** for _any_ preceding insert (paste, widget
   type-around "before"), not just on frontmatter insert. `WidgetTypeAround`
   injects before/after buttons with no per-position API; the "before" button is
   hidden via CSS and the post-fixer relocates anything that lands before.
