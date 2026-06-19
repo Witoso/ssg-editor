@@ -8,7 +8,7 @@
 
 ### Added
 
-- The `frontmatter.collapsible` option. When enabled, the frontmatter renders collapsed (`---` / `...` / `---`) in the editing view and only shows its full content while hovered or while the selection is inside it (with the editor focused). The data output is unaffected.
+- A `FrontmatterToolbar` plugin (opt-in). When loaded, the frontmatter becomes a widget that renders collapsed (`---` / `...` / `---`) by default. A widget toolbar — shown whenever the frontmatter is selected or being edited — toggles between collapsed and expanded. The collapsed state is editing-only and does not affect the data output.
 
 ### Fixed
 

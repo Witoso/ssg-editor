@@ -5,3 +5,4 @@ pnpm-lock.yaml
 **/__screenshots__/
 .vitest-attachments/
 packages/**/lang/
+coverage/
