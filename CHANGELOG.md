@@ -3,8 +3,12 @@
 All notable changes to `@witoso/ssg-editor` are documented here.
 The format follows [Keep a Changelog](https://keepachangelog.com/).
 
-## Unreleased
+## 0.6.0 (2026-06-19)
 
+- Frontmatter blocks now render as a collapsible widget (via
+  `@witoso/ckeditor5-frontmatter` 2.0): a toolbar toggles between the collapsed
+  `---` / `...` / `---` summary and the full editable content, and the collapsed
+  state never affects the saved Markdown.
 - Opening a file no longer triggers a spurious save: the content is now passed
   as the editor's initial data instead of via `setData()`, which Autosave
   treated as an edit and immediately wrote back to disk.
