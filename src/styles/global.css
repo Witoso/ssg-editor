@@ -6,3 +6,33 @@ sl-tree-item.create-file-item::part(label) {
   color: var(--color-gray-500, #6b7280);
   font-style: italic;
 }
+
+/* Tighter nesting so deeply named files keep more horizontal room. */
+.tree-with-icons {
+  --indent-size: 0.75rem;
+}
+
+/* Let the flex item/label parts shrink so a long name can truncate instead of
+   overflowing and forcing the sidebar to scroll horizontally. These parts live
+   in each sl-tree-item's shadow root, so they must be targeted on the item
+   (not the parent sl-tree, whose ::part can't pierce nested components). */
+sl-tree-item::part(item) {
+  min-width: 0;
+}
+
+sl-tree-item::part(label) {
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* Keep each file/folder name on a single line, clipping overflow with an
+   ellipsis; the full name stays available via the element's title tooltip. */
+.tree-with-icons .tree-item-label {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  /* A little breathing room between the file icon and the name. */
+  margin-inline-start: 0.25rem;
+}

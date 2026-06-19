@@ -88,14 +88,18 @@ export function FileTree({
             data-path={fullPath}
           >
             <SlIcon src={FileIcon} />
-            {item.name}
+            <span className="tree-item-label" title={item.name}>
+              {item.name}
+            </span>
           </SlTreeItem>
         );
       } else if (item.type === "folder") {
         return (
           <SlTreeItem key={fullPath} expanded>
             <SlIcon src={FolderIcon} />
-            {item.name}
+            <span className="tree-item-label" title={item.name}>
+              {item.name}
+            </span>
             {item.children && renderTreeItems(item.children, fullPath)}
             {/* Add "Create a file" entry at the end of each folder */}
             {renderCreateItem(fullPath)}

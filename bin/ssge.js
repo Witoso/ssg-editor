@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { spawn } from "child_process";
+import { createServer } from "net";
 import { fileURLToPath, pathToFileURL } from "url";
 import { dirname, join, resolve } from "path";
 import { existsSync } from "fs";
@@ -66,10 +67,23 @@ console.log(`Starting SSG Editor for folder: ${absoluteTargetPath}`);
 if (resolvedConfigPath) {
   console.log(`Using config: ${resolvedConfigPath}`);
 }
+
+// Refuse to start when the requested port is taken instead of silently
+// drifting to another one, which leaves the printed URL pointing at the
+// wrong server.
+if (!(await isPortAvailable(host, port))) {
+  console.error(
+    `Port ${port} is already in use. Stop the process using it or pick another with --port <port>.`,
+  );
+  process.exit(1);
+}
+
 console.log(`SSG Editor is running at http://${host}:${port}`);
 console.log("Press Ctrl+C to stop the server");
 
-// Spawn the server process
+// Spawn the server process. We pipe (rather than inherit) stdout/stderr so we
+// can strip the underlying framework's branded log lines and keep the CLI
+// presenting only SSG Editor output.
 const server = spawn("node", [join(distPath, "server", "entry.mjs")], {
   env: {
     ...process.env,
@@ -78,8 +92,11 @@ const server = spawn("node", [join(distPath, "server", "entry.mjs")], {
     TARGET_PATH: absoluteTargetPath,
     SSG_EDITOR_CONFIG_PATH: resolvedConfigPath,
   },
-  stdio: "inherit",
+  stdio: ["inherit", "pipe", "pipe"],
 });
+
+pipeFiltered(server.stdout, process.stdout);
+pipeFiltered(server.stderr, process.stderr);
 
 // Handle process termination
 process.on("SIGINT", () => {
@@ -93,6 +110,61 @@ process.on("SIGTERM", () => {
   server.kill();
   process.exit();
 });
+
+// Matches the framework's branded logger output (e.g. astro's
+// "HH:MM:SS [@astrojs/node] Server listening ..." or "[astro] ...") so we can
+// keep it from leaking into the CLI's output.
+const BRANDED_LOG_LINE = /\[(?:@?astro(?:js)?)\b[^\]]*\]/i;
+
+// Forwards a child stream to a destination stream line-by-line, dropping
+// branded framework log lines.
+function pipeFiltered(source, destination) {
+  if (!source) {
+    return;
+  }
+
+  let buffer = "";
+
+  source.setEncoding("utf8");
+  source.on("data", (chunk) => {
+    buffer += chunk;
+
+    let newlineIndex;
+    while ((newlineIndex = buffer.indexOf("\n")) !== -1) {
+      const line = buffer.slice(0, newlineIndex);
+      buffer = buffer.slice(newlineIndex + 1);
+
+      if (!BRANDED_LOG_LINE.test(line)) {
+        destination.write(`${line}\n`);
+      }
+    }
+  });
+
+  source.on("end", () => {
+    if (buffer && !BRANDED_LOG_LINE.test(buffer)) {
+      destination.write(buffer);
+    }
+  });
+}
+
+// Resolves to false when something is already listening on host:port so the
+// caller can refuse to start rather than fall back to a different port.
+function isPortAvailable(host, port) {
+  return new Promise((resolve) => {
+    const tester = createServer();
+
+    // Any bind failure (EADDRINUSE when taken, EACCES on a privileged port,
+    // etc.) means we can't use it, so treat the port as unavailable.
+    tester.once("error", () => resolve(false));
+
+    tester.once("listening", () => {
+      tester.close(() => resolve(true));
+    });
+
+    // Bind to the same host the server will use so the check matches reality.
+    tester.listen(Number(port), host);
+  });
+}
 
 // Reads and removes "--flag value" from args, returning the value (or
 // undefined when the flag is absent).
