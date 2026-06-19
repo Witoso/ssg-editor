@@ -15,10 +15,19 @@
     "test:browser": "vitest --browser",
     "preview": "astro preview",
     "astro": "astro",
-    "prepare": "pnpm --filter @witoso/ckeditor5-frontmatter build && pnpm run build",
+    "prepare": "husky && pnpm --filter @witoso/ckeditor5-frontmatter build && pnpm run build",
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
+  },
+  "lint-staged": {
+    "*.{js,mjs,cjs,jsx,ts,tsx,astro}": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{md,json,css,yml,yaml}": [
+      "prettier --write"
+    ]
   },
   "author": "Witek Socha",
   "license": "GPL-3.0-or-later",
@@ -59,6 +68,8 @@
     "eslint-plugin-astro": "^1.7.0",
     "eslint-plugin-jsx-a11y": "^6.10.2",
     "eslint-plugin-react-hooks": "^7.1.1",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.0.7",
     "nanostores": "^1.3.0",
     "npm-check-updates": "^22.2.3",
     "pixelarticons": "^2.1.2",

@@ -18,12 +18,22 @@
   background-color: var(--ck-frontmatter-background);
 }
 
+/*
+ * Make the focused frontmatter editable look identical to the unfocused one
+ * (the widget's own outline still indicates selection). CKEditor otherwise
+ * flips the nested editable to a white background, an inner box-shadow and a
+ * focus-ring border, which causes a visible flash and a 1px content jump.
+ */
 .ck
   .frontmatter.ck-editor__nested-editable.ck-editor__nested-editable_focused:not(
     td,
     th
-  ) {
+  ),
+.ck .frontmatter.ck-editor__nested-editable:focus:not(td, th) {
   border: var(--ck-frontmatter-border-focus);
+  background-color: var(--ck-frontmatter-background);
+  box-shadow: none;
+  outline: none;
 }
 
 .frontmatter::before,
@@ -35,23 +45,15 @@
 }
 
 /*
- * Collapsed state: with the `collapsible` option on, the frontmatter only shows its
- * full content while hovered or while the selection is inside it (editor focused).
+ * Collapsed state: the `FrontmatterToolbar` plugin toggles `.frontmatter-collapsed`
+ * via JS. While collapsed, the editable content is hidden and a `--- / ... / ---`
+ * placeholder is shown in its place.
  */
-.ck
-  .frontmatter-container.frontmatter-collapsible:not(
-    :hover,
-    .frontmatter-selected
-  )
-  > .frontmatter {
+.ck .frontmatter-container.frontmatter-collapsed > .frontmatter {
   display: none;
 }
 
-.ck
-  .frontmatter-container.frontmatter-collapsible:not(
-    :hover,
-    .frontmatter-selected
-  )::before {
+.ck .frontmatter-container.frontmatter-collapsed::before {
   content: "---\A...\A---";
   display: block;
   white-space: pre;
@@ -60,4 +62,13 @@
   border: var(--ck-frontmatter-border);
   background-color: var(--ck-frontmatter-background);
   user-select: none;
+}
+
+/*
+ * The frontmatter is pinned to the top of the document, so only the
+ * "insert paragraph after" type-around affordance is meaningful. Hide the
+ * "before" button (WidgetTypeAround exposes no per-position API).
+ */
+.ck .frontmatter-container.ck-widget .ck-widget__type-around__button_before {
+  display: none;
 }

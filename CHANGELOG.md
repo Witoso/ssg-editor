@@ -14,6 +14,8 @@ The format follows [Keep a Changelog](https://keepachangelog.com/).
 - The CLI now refuses to start when the requested port is already in use
   instead of silently drifting to another port.
 - Hide the underlying framework's log lines from the CLI output.
+- Added a `pre-commit` hook (Husky + lint-staged) that auto-formats and lints
+  staged files, preventing formatting/lint failures from reaching CI.
 
 ## 0.5.0 (2026-06-12)
 
